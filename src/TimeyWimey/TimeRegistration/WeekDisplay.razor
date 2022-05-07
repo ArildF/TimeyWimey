@@ -1,9 +1,18 @@
-﻿
+﻿@using TimeyWimey.Model
+@inject Calendar _calendar;
+@if (Days == null)
+{
+    <p>loading</p>
+    return;
+}
+
 <div class="d-flex" style="height: 70vh">
     
     @foreach (var day in Days)
     {
         <div class="px-1 align-content-xl-stretch">
+            <h4 class="day-of-week">@day.DayOfWeek</h4>
+            <p class="date">@day.Date.ToString("M")</p>
             <svg height="100%" width="100%">
                 <rect height="100%" width="100%" fill="lightgray"/>
             </svg>
@@ -11,5 +20,11 @@
     }
 </div>
 @code {
-    public object[] Days = new object[7];
+    public Day[]? Days;
+
+    protected override void OnInitialized()
+    {
+        Days = _calendar.GetCurrentWeek();
+    }
+
 }
