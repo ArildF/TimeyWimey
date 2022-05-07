@@ -1,0 +1,15 @@
+﻿
+<div class="d-flex" style="height: 70vh">
+    
+    @foreach (var day in Days)
+    {
+        <div class="px-1 align-content-xl-stretch">
+            <svg height="100%" width="100%">
+                <rect height="100%" width="100%" fill="lightgray"/>
+            </svg>
+        </div>
+    }
+</div>
+@code {
+    public object[] Days = new object[7];
+}
