@@ -2,13 +2,13 @@
 @using System.Text.Unicode
 
 
-<rect height="100%" width="100%" fill="lightgray" class="px-1 align-content-stretch"/>
+<rect height="100%" width="100%" fill="lightgray" class="align-content-stretch"/>
 @foreach (int hour in Enumerable.Range(0, 48))
 {
     @if (hour % 2 == 0)
     {
         <text>
-            <text class="hour" x="40%" y="@(HourVerticalPosition(hour) -0.1)%">@($"{hour / 2}:00")</text>
+            <text class="hour" x="0" y="@(HourVerticalPosition(hour) -0.1)%">@($"{hour / 2}:00")</text>
         </text>
     }
     if (hour == 17)
