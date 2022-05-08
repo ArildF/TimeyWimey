@@ -1,5 +1,6 @@
 ﻿@using TimeyWimey.Model
 @using System.Text.Unicode
+@inject TimeLineCalculator _lineCalculator;
 
 
 <rect height="100%" width="100%" fill="lightgray" class="align-content-stretch"/>
@@ -8,22 +9,28 @@
     @if (hour % 2 == 0)
     {
         <text>
-            <text class="hour" x="0" y="@(HourVerticalPosition(hour) -0.1)%">@($"{hour / 2}:00")</text>
+            <text class="hour" x="0" y="@(_lineCalculator.HourVerticalPosition(hour) -0.1)%">@($"{hour / 2}:00")</text>
         </text>
     }
-    if (hour == 17)
+    @if (hour == 17)
     {
         <line stroke-width="0" x1="0" y1="0" x2="0" y2="0" @ref="HourMark" tabindex="0"/>
     }
     double width = hour % 2 == 0 ? 0.3 : 0.1;
-    <line stroke="black" x1="0%" x2="100%" y1="@(HourVerticalPosition(hour))%"
-          y2="@(HourVerticalPosition(hour))%" stroke-width="@(width)px"/>
+    <line stroke="black" x1="0%" x2="100%" y1="@(_lineCalculator.HourVerticalPosition(hour))%"
+          y2="@(_lineCalculator.HourVerticalPosition(hour))%" stroke-width="@(width)px"/>
+    
+}
+@if(Day?.Date == DateOnly.FromDateTime(DateTime.Today))
+{
+    <CurrentTimeLine/>
 }
 
 @code {
     [Parameter]
     public Day? Day { get; set; }
 
-    public double HourVerticalPosition(int hour) => 100.0 / 48 * hour;
+    
     public ElementReference HourMark { get; set; }
+
 }
