@@ -1,0 +1,22 @@
+@using TimeyWimey.Model
+@inject TimeLineCalculator _lineCalculator;
+
+@if (Day == null)
+{
+    return;
+}
+
+@foreach (var entry in Day.Entries)
+{
+    var y = _lineCalculator.HourVerticalPosition(entry.Start);
+    var height = _lineCalculator.HourVerticalPosition(entry.End) - y;
+    
+    <rect fill="lightgreen" y="@(y)%" x="0" height="@(height)%" width="100%">
+        
+    </rect>
+}
+
+@code {
+    [Parameter]
+    public Day? Day { get; set; }
+}

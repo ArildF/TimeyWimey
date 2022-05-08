@@ -21,11 +21,15 @@
     {
         <line stroke-width="0" x1="0" y1="0" x2="0" y2="0" @ref="HourMark" tabindex="0"/>
     }
+    
+    
     double width = halfHour % 2 == 0 ? 0.3 : 0.1;
     <line stroke="black" x1="0%" x2="100%" y1="@(y)%"
           y2="@(y)%" stroke-width="@(width)px"/>
     
 }
+<TimeEntriesDisplay Day="Day"/>
+
 @if(Day?.Date == DateOnly.FromDateTime(DateTime.Today))
 {
     <CurrentTimeLine/>
@@ -37,6 +41,7 @@
 
     
     public ElementReference HourMark { get; set; }
+
 
     private async Task CreateChunk(MouseEventArgs args, TimeOnly timeOnly)
     {
@@ -52,7 +57,6 @@
             End = timeOnly.AddHours(0.5)
         };
         Day.Entries.Add(timeEntry);
-        Console.WriteLine($"Added entry from {timeEntry.Start} to {timeEntry.End}!");
     }
 
 }
