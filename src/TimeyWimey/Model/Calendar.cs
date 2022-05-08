@@ -4,7 +4,8 @@ public class Calendar
 {
     public Day[] GetCurrentWeek()
     {
-        var diff = DateTime.Now.DayOfWeek - DayOfWeek.Monday;
+        int diff = DateTime.Now.DayOfWeek == DayOfWeek.Sunday ? 6
+            : DateTime.Now.DayOfWeek - DayOfWeek.Monday;
         var firstOfWeek = DateOnly.FromDateTime(DateTime.Now).AddDays(-diff);
 
 
