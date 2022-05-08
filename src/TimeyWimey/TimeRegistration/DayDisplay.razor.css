@@ -2,3 +2,7 @@
     text-align: justify;
     font-size: 0.8rem;
 }
+
+.time-chunk {
+    cursor: pointer;
+}

@@ -3,22 +3,26 @@
 @inject TimeLineCalculator _lineCalculator;
 
 
-<rect height="100%" width="100%" fill="lightgray" class="align-content-stretch"/>
-@foreach (int hour in Enumerable.Range(0, 48))
+@foreach (int halfHour in Enumerable.Range(0, 48))
 {
-    @if (hour % 2 == 0)
+    var y = _lineCalculator.HourVerticalPosition(halfHour);
+    var height = _lineCalculator.HourVerticalPosition(halfHour + 1) - y;
+
+    <rect y="@(y)%" height="@(height)%" width="100%" fill="lightgray" cursor="pointer" 
+          class="align-content-stretch time-chunk"/>
+    @if (halfHour % 2 == 0)
     {
         <text>
-            <text class="hour" x="0" y="@(_lineCalculator.HourVerticalPosition(hour) -0.1)%">@($"{hour / 2}:00")</text>
+            <text class="hour" x="0" y="@(y -0.1)%">@($"{halfHour / 2}:00")</text>
         </text>
     }
-    @if (hour == 17)
+    @if (halfHour == 17)
     {
         <line stroke-width="0" x1="0" y1="0" x2="0" y2="0" @ref="HourMark" tabindex="0"/>
     }
-    double width = hour % 2 == 0 ? 0.3 : 0.1;
-    <line stroke="black" x1="0%" x2="100%" y1="@(_lineCalculator.HourVerticalPosition(hour))%"
-          y2="@(_lineCalculator.HourVerticalPosition(hour))%" stroke-width="@(width)px"/>
+    double width = halfHour % 2 == 0 ? 0.3 : 0.1;
+    <line stroke="black" x1="0%" x2="100%" y1="@(y)%"
+          y2="@(y)%" stroke-width="@(width)px"/>
     
 }
 @if(Day?.Date == DateOnly.FromDateTime(DateTime.Today))
