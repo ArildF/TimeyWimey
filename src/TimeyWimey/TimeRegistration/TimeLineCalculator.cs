@@ -2,5 +2,6 @@
 
 public class TimeLineCalculator
 {
-    public double HourVerticalPosition(double hour) => 100.0 / 48 * hour;
+    public double HourVerticalPosition(TimeSpan time) => 100.0 / 24 * time.TotalHours;
+    public double HourVerticalPosition(TimeOnly time) => HourVerticalPosition(time.ToTimeSpan());
 }

@@ -1,8 +1,8 @@
 ﻿@inject TimeLineCalculator _lineCalculator;
 @implements IDisposable;
 @{
-    double hours = DateTime.Now.TimeOfDay.TotalHours * 2;
-    double y = _lineCalculator.HourVerticalPosition(hours);
+    var time = TimeOnly.FromDateTime(DateTime.Now);
+    double y = _lineCalculator.HourVerticalPosition(time);
 
     <line stroke="blue" x1="0%" x2="100%" y1="@(y)%" y2="@(y)%" stroke-width="2px"/>
 }
