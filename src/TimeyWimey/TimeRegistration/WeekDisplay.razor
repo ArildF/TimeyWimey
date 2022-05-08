@@ -21,10 +21,10 @@
         }
     </div>
 
-    <div class="day-scrollable flex-row d-flex" style="height: 85vh" @ref="ScrollDiv">
+    <div class="day-scrollable flex-row d-flex" style="height: 85vh; width: 100%" @ref="ScrollDiv">
         @foreach(var day in Days)
         {
-            <svg height="200%" width="100%">
+            <svg height="200%" width="100%" class="px-1">
                 <DayDisplay Day="day"></DayDisplay>
                
             </svg>
