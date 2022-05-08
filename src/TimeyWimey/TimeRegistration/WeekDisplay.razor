@@ -1,5 +1,8 @@
 ﻿@using TimeyWimey.Model
+@using Microsoft.AspNetCore.Components.WebAssembly.Infrastructure
 @inject Calendar _calendar;
+@inject IJSRuntime _jsRuntime;
+
 @if (Days == null)
 {
     <p>loading</p>
@@ -18,7 +21,7 @@
         }
     </div>
 
-    <div class="day-scrollable flex-row d-flex" style="height: 85vh">
+    <div class="day-scrollable flex-row d-flex" style="height: 85vh" @ref="ScrollDiv">
         @foreach(var day in Days)
         {
             <svg height="200%" width="100%">
@@ -31,11 +34,21 @@
 @code {
     public Day[]? Days;
 
-    
+
+    public ElementReference ScrollDiv { get; set; }
 
     protected override void OnInitialized()
     {
         Days = _calendar.GetCurrentWeek();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // TODO: find a smarter/more dynamic way to do this.
+            await _jsRuntime.InvokeVoidAsync("scrollElement", ScrollDiv, 0, 450);
+        }
     }
 
 }
