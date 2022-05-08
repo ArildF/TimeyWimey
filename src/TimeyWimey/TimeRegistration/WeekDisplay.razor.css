@@ -8,10 +8,6 @@
     font-size: 0.9rem;
 }
 
-.hour {
-    text-align: center;
-    font-size: 0.9rem;
-}
 
 .day-scrollable {
     overflow-y: scroll;

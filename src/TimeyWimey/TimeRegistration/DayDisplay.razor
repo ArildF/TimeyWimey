@@ -1,0 +1,23 @@
+﻿@using TimeyWimey.Model
+
+
+<rect height="100%" width="100%" fill="lightgray" class="px-1 align-content-stretch"/>
+@foreach (int hour in Enumerable.Range(0, 48))
+{
+    @if (hour % 2 == 0)
+    {
+        <text>
+            <text class="hour" x="40%" y="@(HourVerticalPosition(hour) -0.1)%">@($"{hour / 2}:00")</text>
+        </text>
+    }
+    double width = hour % 2 == 0 ? 0.3 : 0.1;
+    <line stroke="black" x1="0%" x2="100%" y1="@(HourVerticalPosition(hour))%"
+          y2="@(HourVerticalPosition(hour))%" stroke-width="@(width)px"/>
+}
+
+@code {
+    [Parameter]
+    public Day? Day { get; set; }
+
+    public double HourVerticalPosition(int hour) => 100.0 / 48 * hour;
+}
