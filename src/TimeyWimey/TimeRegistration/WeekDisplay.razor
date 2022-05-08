@@ -10,7 +10,11 @@
 }
 
 <div>
-    
+    <div class="flex-row d-flex" style="background: aqua">
+        <label for="fivedayweek">Five day week</label>
+        <input type="checkbox" @bind="FiveDayWeek" style="width: 60px; alignment-baseline: center" id="fivedayweek"/>
+    </div>
+
     <div class="flex-row d-flex" style="width: 100%">
         @foreach (var day in Days)
         {
@@ -22,24 +26,30 @@
     </div>
 
     <div class="day-scrollable flex-row d-flex" style="height: 85vh; width: 100%" @ref="ScrollDiv">
-        @foreach(var day in Days)
+        @foreach (var day in Days)
         {
             <svg height="200%" width="100%" class="px-1">
                 <DayDisplay Day="day"></DayDisplay>
-               
+
             </svg>
         }
     </div>
 </div>
 @code {
-    public Day[]? Days;
+
+    private Day[]? _days;
+
+    private Day[]? Days
+    {
+        get => _fiveDayWeek ? _days?.Take(5).ToArray() : _days;
+    }
 
 
     public ElementReference ScrollDiv { get; set; }
 
     protected override void OnInitialized()
     {
-        Days = _calendar.GetCurrentWeek();
+        _days = _calendar.GetCurrentWeek();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -51,4 +61,11 @@
         }
     }
 
+    private bool _fiveDayWeek = true;
+
+    private bool FiveDayWeek
+    {
+        get => _fiveDayWeek;
+        set => _fiveDayWeek = value;
+    }
 }
