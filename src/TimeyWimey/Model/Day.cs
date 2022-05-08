@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace TimeyWimey.Model;
 public class Day
@@ -10,6 +11,8 @@ public class Day
             DayOfWeek.Monday);
     public DateOnly Date { get; }
     public DayOfWeek DayOfWeek => Date.DayOfWeek;
+
+    public ObservableCollection<TimeEntry> Entries { get; } = new();
 
     public Day(DateOnly date)
     {
