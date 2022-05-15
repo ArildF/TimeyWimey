@@ -47,6 +47,9 @@
     [Parameter]
     public ElementReference SvgElement { get; set; }
 
+    [Parameter]
+    public EventCallback DragCompleted { get; set; }
+
     protected override void OnInitialized() {
         _mouseService.OnMove += OnMove;
         _mouseService.OnUp += OnUpLeave;
@@ -74,8 +77,12 @@
         //Console.WriteLine($"OnDown, {cursorX}, {cursorY}");
     }
 
-    void OnUpLeave(object? _, MouseEventArgs e) 
-        => IsDown = false;
+    async void OnUpLeave(object? _, MouseEventArgs e)
+    {
+        IsDown = false;
+        await DragCompleted.InvokeAsync();
+
+    }
 
     async void OnMove(object? _, MouseEventArgs e)
     {
