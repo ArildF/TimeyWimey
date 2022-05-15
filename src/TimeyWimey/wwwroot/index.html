@@ -28,6 +28,11 @@
         window.scrollElement = (element, x, y) => {
             element.scroll(x, y);
         };
+        window.domGetBoundingClientRect = (element) => {
+            console.log(element);
+            //console.log(typeof element);
+            return element.getBoundingClientRect();
+        };
     </script>
 </body>
 

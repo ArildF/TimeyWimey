@@ -1,0 +1,90 @@
+@using TimeyWimey.Model
+@using TimeyWimey.Infrastructure
+@inject TimeLineCalculator _lineCalculator;
+
+@if (Day == null)
+{
+    return;
+}
+
+@{
+var y = _lineCalculator.HourVerticalPosition(Entry.Start);
+var height = _lineCalculator.HourVerticalPosition(Entry.End.ToTimeSpan()) - y;
+var textPos = y + (height / 2) + 0.25;
+var bottom = y + height;
+
+<rect fill="lightgreen" y="@(y)%" x="0" height="@(height)%" width="100%" rx="12" ry="12">
+</rect>
+<text>
+    <text x="5%" y="@(textPos)%" style="font-size: 0.8rem; text-align: center; user-select: none;" width="100%">@Entry.Title</text>
+</text>
+<EntryTimeDraggable  @bind-Y="YTop" X="0" SvgElement="@SvgElement" @bind-YPercent="YPercentTop">
+    <rect fill="blue" height="3px" width="100%" y="@(y)%"/>
+</EntryTimeDraggable>
+<EntryTimeDraggable X="0" SvgElement="@SvgElement" @bind-Y="YBottom" @bind-YPercent="YPercentBottom">
+    <rect fill="red" x="0" y = "@(bottom)%" height="3px" width="100%"/>A
+</EntryTimeDraggable>
+}
+
+@code {
+    [Parameter]
+    public Day? Day { get; set; }
+
+    [Parameter]
+    public TimeEntry? Entry { get; set; }
+
+    [Parameter]
+    public ElementReference SvgElement { get; set; }
+
+    public double YTop { get; set; }
+    public double YBottom { get; set; }
+
+
+    private double _yPercentTop;
+    public double YPercentTop
+    {
+        get => _yPercentTop;
+        set
+        {
+            _yPercentTop = value;
+            var start = ClosestHalfHour(_yPercentTop);
+            if (Entry != null && Entry.Start != start)
+            {
+                Entry.Start = start;
+                Console.WriteLine($"Entry start: {Entry.Start}");
+                YTop = 0;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private double _yPercentBottom;
+    public double YPercentBottom
+    {
+        get => _yPercentBottom;
+        set
+        {
+            _yPercentBottom = value;
+            var end = ClosestHalfHour(_yPercentBottom);
+            if (Entry != null && Entry.End != end)
+            {
+                Entry.End = end;
+                Console.WriteLine($"Entry end: {Entry.End}");
+                YBottom = 0;
+                StateHasChanged();
+            }
+        }
+    }
+
+
+    private TimeOnly ClosestHalfHour(double percent)
+    {
+        var minutes = 1440 * (percent * 0.01);
+        float multiple = 30;
+        var roundedToHalfHour = (int)MathF.Round((float)minutes / multiple) * multiple;
+        var timespan = TimeSpan.FromMinutes(roundedToHalfHour);
+        var start = TimeOnly.FromTimeSpan(timespan);
+        return start;
+    }
+
+}

@@ -1,6 +1,7 @@
 ﻿.hour {
     text-align: justify;
     font-size: 0.8rem;
+    user-select: none;
 }
 
 .time-chunk {

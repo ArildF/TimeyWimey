@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using TimeyWimey;
+using TimeyWimey.Infrastructure;
 using TimeyWimey.Model;
 using TimeyWimey.TimeRegistration;
 
@@ -12,5 +13,8 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 builder.Services.AddSingleton<Calendar>();
 builder.Services.AddSingleton<TimeLineCalculator>();
+
+builder.Services.AddSingleton<MouseService>();
+builder.Services.AddSingleton<IMouseService>(sp => sp.GetRequiredService<MouseService>());
 
 await builder.Build().RunAsync();

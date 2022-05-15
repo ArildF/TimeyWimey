@@ -1,0 +1,124 @@
+﻿@using TimeyWimey.Infrastructure
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject IMouseService _mouseService;
+@inject IJSRuntime _jsRuntime;
+
+<g cursor="ns-resize" @onmousedown="OnDown" @onmousedown:stopPropagation="true"
+   transform="translate(@_x, @_y)">
+    @ChildContent
+</g>
+
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    
+    double? _x;
+    [Parameter]
+    public double X { 
+        get => _x ?? 0;
+        set { if (!_x.HasValue || (!IsDown & XChanged.HasDelegate)) { _x = value; } } 
+    }
+    [Parameter] public EventCallback<double> XChanged { get; set; }
+
+    double? _y;
+    [Parameter]
+    public double Y {
+        get => _y ?? 0;
+        set => _y = value;
+    //set { if (!_y.HasValue || (!IsDown & YChanged.HasDelegate)) { _y = value; } }
+    }
+    [Parameter] public EventCallback<double> YChanged { get; set; }
+
+    [Parameter]
+    public double YPercent { get; set; }
+
+
+    [Parameter]
+    public EventCallback<double> YPercentChanged { get; set; }
+
+    [Parameter]
+    public bool AllowHorizontalDrag { get; set; } = false;
+
+    [Parameter]
+    public bool AllowVerticalDrag { get; set; } = true;
+
+    [Parameter]
+    public ElementReference SvgElement { get; set; }
+
+    protected override void OnInitialized() {
+        _mouseService.OnMove += OnMove;
+        _mouseService.OnUp += OnUpLeave;
+        _mouseService.OnLeave += OnUpLeave;
+        base.OnInitialized();
+    }
+
+
+    string _cursor = "grab";
+    bool _isDown;
+    bool IsDown {
+        get => _isDown;
+        set {
+            _isDown = value;
+            _cursor = _isDown ? "grabbing" : "grab";
+        }
+    }
+
+    double cursorX;
+    double cursorY;
+    void OnDown(MouseEventArgs e) {
+        IsDown = true;
+        cursorX = e.ClientX;
+        cursorY = e.ClientY;
+        //Console.WriteLine($"OnDown, {cursorX}, {cursorY}");
+    }
+
+    void OnUpLeave(object? _, MouseEventArgs e) 
+        => IsDown = false;
+
+    async void OnMove(object? _, MouseEventArgs e)
+    {
+        if (!IsDown)
+            return;
+
+        if (AllowHorizontalDrag)
+        {
+            _x -= (cursorX - e.ClientX);
+        }
+
+
+        if (AllowVerticalDrag)
+        {
+            _y -= (cursorY - e.ClientY);
+        }
+
+        //Console.WriteLine($"OnMove, ({e.ClientX}, {e.ClientY}) ({_x}, {_y})");
+
+        cursorX = e.ClientX;
+        cursorY = e.ClientY;
+
+        if (_x != null)
+        {
+            await XChanged.InvokeAsync(_x.Value);
+        }
+        if (_y != null)
+        {
+            await YChanged.InvokeAsync(_y.Value);
+        }
+
+        var rect = await _jsRuntime.InvokeAsync<BoundingClientRect>("domGetBoundingClientRect", SvgElement);
+
+        YPercent = (100.0 / rect.Height) * e.OffsetY;
+        var dump = JsonSerializer.Serialize(e, new JsonSerializerOptions{WriteIndented = true});
+        Console.WriteLine($"OnMove YPercent: {YPercent}, rect.Height: {rect.Height}, e: {dump}");
+        await YPercentChanged.InvokeAsync(YPercent);
+    }
+
+    public void Dispose() {
+        _mouseService.OnMove -= OnMove;
+        _mouseService.OnUp -= OnUpLeave;
+        _mouseService.OnLeave -= OnUpLeave;
+    }
+
+}

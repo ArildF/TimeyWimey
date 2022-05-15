@@ -1,7 +1,13 @@
 ﻿@using TimeyWimey.Model
 @using System.Text.Unicode
+@using TimeyWimey.Infrastructure
 @inject TimeLineCalculator _lineCalculator;
+@inject MouseService _mouseService;
 
+<svg height="200%" width="100%" class="px-1" @ref="SvgElement"
+     @onmousemove=@(e => _mouseService.FireMove(this, e))
+             @onmouseup=@(e => _mouseService.FireUp(this, e))
+     >
 @foreach (int halfHour in Enumerable.Range(0, 48))
 {
     var time = TimeOnly.MinValue.AddHours(halfHour / 2.0);
@@ -28,12 +34,13 @@
           y2="@(y)%" stroke-width="@(width)px"/>
     
 }
-<TimeEntriesDisplay Day="Day"/>
+<TimeEntriesDisplay Day="Day" SvgElement="SvgElement"/>
 
 @if(Day?.Date == DateOnly.FromDateTime(DateTime.Today))
 {
     <CurrentTimeLine/>
 }
+</svg>
 
 @code {
     [Parameter]
@@ -42,6 +49,8 @@
     
     public ElementReference HourMark { get; set; }
 
+
+    public ElementReference SvgElement { get; set; }
 
     private async Task CreateChunk(MouseEventArgs args, TimeOnly timeOnly)
     {
