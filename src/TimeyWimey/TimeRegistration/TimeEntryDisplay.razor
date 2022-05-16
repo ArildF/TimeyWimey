@@ -10,13 +10,13 @@
 @{
 var y = _lineCalculator.HourVerticalPosition(Entry.Start);
 var height = _lineCalculator.HourVerticalPosition(Entry.End.ToTimeSpan()) - y;
-var textPos = y + (height / 2) + 0.25;
+var textPos = y + (height / 2);
 var bottom = y + height;
 
 <rect fill="lightgreen" y="@(y)%" x="0" height="@(height)%" width="100%" rx="12" ry="12">
 </rect>
 <text>
-    <text x="5%" y="@(textPos)%" style="font-size: 0.8rem; text-align: center; user-select: none;" width="100%">@Entry.Title</text>
+    <text x="50%" y="@(textPos)%" class="entryTitle" width="100%">@Entry.Title</text>
 </text>
     <EntryTimeDraggable  @bind-Y="YTop" X="0" SvgElement="@SvgElement" @bind-YPercent="YPercentTop"
                          DragCompleted="TopDragCompleted">

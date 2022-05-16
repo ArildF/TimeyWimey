@@ -8,13 +8,8 @@
      @onmousemove=@(e => _mouseService.FireMove(this, e))
              @onmouseup=@(e => _mouseService.FireUp(this, e))
      >
-@foreach (int halfHour in Enumerable.Range(0, 48))
+@foreach (var (time, y, height, halfHour) in EnumerateDay(48))
 {
-    var time = TimeOnly.MinValue.AddHours(halfHour / 2.0);
-    
-    var y = _lineCalculator.HourVerticalPosition(time);
-    var height = _lineCalculator.HourVerticalPosition(time.AddHours(0.5).ToTimeSpan()) - y;
-
     <rect y="@(y)%" height="@(height)%" width="100%" fill="lightgray" cursor="pointer" 
           class="align-content-stretch time-chunk" @onclick="async args => await CreateChunk(args, time)"/>
     @if (halfHour % 2 == 0)
@@ -27,14 +22,26 @@
     {
         <line stroke-width="0" x1="0" y1="0" x2="0" y2="0" @ref="HourMark" tabindex="0"/>
     }
+
+    if (halfHour % 2 != 0)
+    {
+        <line stroke="black" x1="0%" x2="100%" y1="@(y)%"
+          y2="@(y)%" stroke-width="0.2px"/>
+    }
     
-    
-    double width = halfHour % 2 == 0 ? 0.3 : 0.1;
-    <line stroke="black" x1="0%" x2="100%" y1="@(y)%"
-          y2="@(y)%" stroke-width="@(width)px"/>
     
 }
 <TimeEntriesDisplay Day="Day" SvgElement="SvgElement"/>
+
+@foreach (var (time, y, _, hour) in EnumerateDay(24))
+{
+    <text>
+        <text class="hour" x="0" y="@(y -0.1)%">@($"{hour}:00")</text>
+    </text>
+
+    <line stroke="black" x1="0%" x2="100%" y1="@(y)%"
+          y2="@(y)%" stroke-width="0.4px"/>
+}
 
 @if(Day?.Date == DateOnly.FromDateTime(DateTime.Today))
 {
@@ -51,6 +58,19 @@
 
 
     public ElementReference SvgElement { get; set; }
+
+    private IEnumerable<(TimeOnly time, double y, double height, int index)> EnumerateDay(int chunks)
+    {
+        int factor = chunks / 24;
+        foreach (var timeOffset in Enumerable.Range(0, chunks))
+        {
+            var time = TimeOnly.MinValue.AddHours((double)timeOffset / factor);
+            var y = _lineCalculator.HourVerticalPosition(time);
+            var height = _lineCalculator.HourVerticalPosition(time.AddHours(0.5).ToTimeSpan()) - y;
+
+            yield return (time, y, height, timeOffset);
+        }
+    }
 
     private async Task CreateChunk(MouseEventArgs args, TimeOnly timeOnly)
     {
