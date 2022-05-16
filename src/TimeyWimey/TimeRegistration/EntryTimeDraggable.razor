@@ -79,8 +79,12 @@
 
     async void OnUpLeave(object? _, MouseEventArgs e)
     {
+        var wasDown = IsDown;
         IsDown = false;
-        await DragCompleted.InvokeAsync();
+        if (wasDown)
+        {
+            await DragCompleted.InvokeAsync();
+        }
 
     }
 

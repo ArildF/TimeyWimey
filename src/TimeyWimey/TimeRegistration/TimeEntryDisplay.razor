@@ -20,11 +20,13 @@ var bottom = y + height;
 </text>
     <EntryTimeDraggable  @bind-Y="YTop" X="0" SvgElement="@SvgElement" @bind-YPercent="YPercentTop"
                          DragCompleted="TopDragCompleted">
-    <rect fill="blue" height="3px" width="100%" y="@(y)%"/>
+    <rect fill="lightgreen" height="5px" width="100%" y="@(y)%"/>
+    <rect fill="black" height="1px" width="100%" y="@(y)%"/>
 </EntryTimeDraggable>
     <EntryTimeDraggable X="0" SvgElement="@SvgElement" @bind-Y="YBottom" @bind-YPercent="YPercentBottom"
                         DragCompleted="BottomDragCompleted">
-    <rect fill="red" x="0" y = "@(bottom)%" height="3px" width="100%"/>A
+    <rect fill="lightgreen" x="0" y = "@(bottom)%" height="5px" width="100%"/>A
+    <rect fill="black" height="1px" width="100%" y="@(bottom)%"/>
 </EntryTimeDraggable>
 }
 
@@ -91,8 +93,27 @@ var bottom = y + height;
         return start;
     }
 
-    private void TopDragCompleted() => Entry!.Start = ClosestHalfHour(Entry.Start);
-    private void BottomDragCompleted() => Entry!.End = ClosestHalfHour(Entry.End);
+    private void TopDragCompleted()
+    {
+        Entry!.Start = ClosestHalfHour(Entry.Start);
+        var overlapping = Day!.Entries.FirstOrDefault(
+            e => e.End > Entry.Start && e.Start < Entry.Start);
+        if (overlapping != null)
+        {
+            Entry.Start = overlapping.End;
+        }
+    }
 
-    private const int MinutesPerDay = 1440;
+    private void BottomDragCompleted()
+    {
+        Entry!.End = ClosestHalfHour(Entry.End);
+        var overlapping = Day!.Entries.FirstOrDefault(
+            e => e.Start < Entry.End && e.End > Entry.End);
+        if (overlapping != null)
+        {
+            Entry.End = overlapping.Start;
+        }
+    }
+
+        private const int MinutesPerDay = 1440;
 }

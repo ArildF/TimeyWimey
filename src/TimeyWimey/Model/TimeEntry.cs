@@ -1,5 +1,8 @@
+using System.Diagnostics;
+
 namespace TimeyWimey.Model;
 
+[DebuggerDisplay("{Start.Hour}:{Start.Minute}-{End.Hour}:{End.Minute}")]
 public class TimeEntry
 {
     public TimeOnly Start { get; set; }
