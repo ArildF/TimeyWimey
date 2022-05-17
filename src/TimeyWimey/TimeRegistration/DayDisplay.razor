@@ -86,7 +86,8 @@
             Description = "Description",
             Title = "Some activity",
             Start = timeOnly,
-            End = timeOnly.AddHours(0.5)
+            End = timeOnly.AddHours(0.5),
+            Color = "hotpink",
         };
         Day.Entries.Add(timeEntry);
         await _persistence.Save(Day);

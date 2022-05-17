@@ -36,6 +36,22 @@ public class DataPersistence
         await Sync();
     }
 
+    public async Task Save(TimeActivity activity)
+    {
+        await using var db = await _contextFactory.CreateDbContextAsync();
+        if (activity.Id != 0)
+        {
+            db.Activities.Update(activity);
+        }
+        else
+        {
+            await db.Activities.AddAsync(activity);
+        }
+        await db.SaveChangesAsync();
+
+        await Sync();
+    }
+
     private async Task Sync()
     {
         await _module.InvokeVoidAsync("syncDatabase", false);
@@ -61,6 +77,7 @@ public class DataPersistence
         await using var db = await _contextFactory.CreateDbContextAsync();
         var days = await db.Days.Where(d => dates.Contains(d.Date))
             .Include(d => d.Entries)
+            .ThenInclude(e => e.Activity)
             .ToDictionaryAsync(d => d.Date);
 
         Day GetOrCreate(DateOnly date) => days.TryGetValue(date, out var res)
@@ -70,5 +87,11 @@ public class DataPersistence
         var currentWeek = dates.Select(GetOrCreate).ToArray();
         return currentWeek;
 
+    }
+
+    public async Task<TimeActivity[]?> GetActivities()
+    {
+        await using var db = await _contextFactory.CreateDbContextAsync();
+        return await db.Activities.ToArrayAsync();
     }
 }

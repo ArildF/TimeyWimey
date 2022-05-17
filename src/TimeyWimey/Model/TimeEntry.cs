@@ -12,6 +12,10 @@ public class TimeEntry
     public string? Title { get; set; }
     public string? Description { get; set; }
 
+    public TimeActivity? Activity { get; set; }
+
+    public string? Color { get; set; }
+
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
 

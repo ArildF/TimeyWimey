@@ -1,12 +1,19 @@
 ﻿@using MudBlazor;
+@using MudBlazor.Utilities
+@using TimeyWimey.Data
 @using TimeyWimey.Model
+@inject IDialogService _dialogService;
+@inject DataPersistence _persistence;
+
 <MudMenu @ref="Menu">
     <ChildContent>
         <MudTextField Placeholder="Search" Value="_searchText" Style="padding-left: 6px"
                       AdornmentIcon="@Icons.Filled.Search" DebounceInterval="500" ValueChanged="(string term) => Search(term)"/>
+
+        <MudMenuItem OnClick="New">[New...]</MudMenuItem>
         @foreach (var activity in _filteredActivities)
         {
-            <MudMenuItem OnClick="async () => await Callback(activity)">@activity</MudMenuItem>
+            <MudMenuItem OnClick="async () => await SetActivity(activity)">@activity.Name</MudMenuItem>
         }
     </ChildContent>
 </MudMenu>
@@ -22,14 +29,14 @@
     [Parameter]
     public EventCallback Committed { get; set; }
 
-    private string[]? _filteredActivities;
+    private TimeActivity[]? _filteredActivities;
 
-    private string[] _activities = new[] { "One activity", "Some other activity", "Simpsons", "Homers" };
+    private TimeActivity[]? _activities; 
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
+        _activities = await _persistence.GetActivities();
         _filteredActivities = _activities;
-        return base.OnInitializedAsync();
     }
 
     public void Toggle(MouseEventArgs obj)
@@ -42,19 +49,52 @@
     {
         _searchText = term;
         _filteredActivities = _activities.Where(a => 
-            string.IsNullOrWhiteSpace(term) || a.Contains(term, StringComparison.InvariantCultureIgnoreCase))
+            string.IsNullOrWhiteSpace(term) || 
+            (a.Name?.Contains(term, StringComparison.InvariantCultureIgnoreCase) ?? false))
             .ToArray();
     }
 
-    private async Task Callback(string activity)
+    private async Task SetActivity(TimeActivity activity)
     {
         if (Entry != null && Day != null)
         {
-            Entry.Title = activity;
-            await Committed.InvokeAsync();
+            await AssignActivity(activity);
         }
     }
 
-    private string _searchText;
+    private async Task AssignActivity(TimeActivity activity)
+    {
+        Entry.Activity = activity;
+        Entry.Title = activity.Name;
+        Entry.Color = activity.Color;
+        await Committed.InvokeAsync();
+    }
+
+    private string? _searchText;
+
+    private async Task New()
+    {
+        var activity = new TimeActivity{Color = new MudColor(0, 255, 0, 255).ToString(MudColorOutputFormats.HexA)};
+        var parameters = new DialogParameters { { nameof(TimeActivityEditor.Activity), activity } };
+
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            DisableBackdropClick = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true,
+            Position = DialogPosition.Center,
+        };
+
+        var d = _dialogService.Show<TimeActivityEditor>("New activity", parameters, options);
+        var result = await d.Result;
+
+        if (!result.Cancelled)
+        {
+            await _persistence.Save(activity);
+            await AssignActivity(activity);
+        }
+
+    }
 
 }
