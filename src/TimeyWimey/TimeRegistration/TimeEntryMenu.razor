@@ -2,7 +2,9 @@
 @using TimeyWimey.Model
 <MudMenu @ref="Menu">
     <ChildContent>
-        @foreach (var activity in _activities)
+        <MudTextField Placeholder="Search" Value="_searchText" Style="padding-left: 6px"
+                      AdornmentIcon="@Icons.Filled.Search" DebounceInterval="500" ValueChanged="(string term) => Search(term)"/>
+        @foreach (var activity in _filteredActivities)
         {
             <MudMenuItem OnClick="async () => await Callback(activity)">@activity</MudMenuItem>
         }
@@ -20,13 +22,28 @@
     [Parameter]
     public EventCallback Committed { get; set; }
 
-    private string[] _activities = new[] { "One activity", "Some other activity" };
+    private string[]? _filteredActivities;
+
+    private string[] _activities = new[] { "One activity", "Some other activity", "Simpsons", "Homers" };
+
+    protected override Task OnInitializedAsync()
+    {
+        _filteredActivities = _activities;
+        return base.OnInitializedAsync();
+    }
 
     public void Toggle(MouseEventArgs obj)
     {
         Menu.PopoverStyle = $"margin-top: {obj.ClientY}px; margin-left: {obj.ClientX}px";
-        Console.WriteLine(Menu.PopoverStyle);
         Menu.ToggleMenu(obj);
+    }
+
+    private void Search(string term)
+    {
+        _searchText = term;
+        _filteredActivities = _activities.Where(a => 
+            string.IsNullOrWhiteSpace(term) || a.Contains(term, StringComparison.InvariantCultureIgnoreCase))
+            .ToArray();
     }
 
     private async Task Callback(string activity)
@@ -37,5 +54,7 @@
             await Committed.InvokeAsync();
         }
     }
+
+    private string _searchText;
 
 }
