@@ -2,7 +2,7 @@
 
 public class Calendar
 {
-    public Day[] GetCurrentWeek()
+    public DateOnly[] GetCurrentWeek()
     {
         int diff = DateTime.Now.DayOfWeek == DayOfWeek.Sunday ? 6
             : DateTime.Now.DayOfWeek - DayOfWeek.Monday;
@@ -11,7 +11,6 @@ public class Calendar
 
         return Enumerable.Range(0, 7)
             .Select(days => firstOfWeek.AddDays(days))
-            .Select(day => new Day(day))
             .ToArray();
         ;
     }

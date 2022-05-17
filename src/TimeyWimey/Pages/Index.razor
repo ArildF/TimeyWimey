@@ -1,9 +1,20 @@
 ﻿@page "/"
+@inject WimeyDataContext _db;
 @using TimeyWimey.TimeRegistration;
+@using TimeyWimey.Data
+@using Microsoft.EntityFrameworkCore
 
 <PageTitle>Index</PageTitle>
 
 <WeekDisplay/>
 
 
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
 
+        var days = await _db.Days.ToArrayAsync();
+        await base.OnInitializedAsync();
+    }
+}

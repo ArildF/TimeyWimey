@@ -1,8 +1,11 @@
 ﻿@using TimeyWimey.Model
 @using System.Text.Unicode
+@using Microsoft.EntityFrameworkCore
+@using TimeyWimey.Data
 @using TimeyWimey.Infrastructure
 @inject TimeLineCalculator _lineCalculator;
 @inject MouseService _mouseService;
+@inject DataPersistence _persistence;
 
 <svg height="200%" width="100%" class="px-1" @ref="SvgElement"
      @onmousemove=@(e => _mouseService.FireMove(this, e))
@@ -86,6 +89,7 @@
             End = timeOnly.AddHours(0.5)
         };
         Day.Entries.Add(timeEntry);
+        await _persistence.Save(Day);
     }
 
 }
