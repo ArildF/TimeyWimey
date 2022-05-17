@@ -1,0 +1,41 @@
+﻿@using MudBlazor;
+@using TimeyWimey.Model
+<MudMenu @ref="Menu">
+    <ChildContent>
+        @foreach (var activity in _activities)
+        {
+            <MudMenuItem OnClick="async () => await Callback(activity)">@activity</MudMenuItem>
+        }
+    </ChildContent>
+</MudMenu>
+@code {
+    private MudMenu Menu { get; set; }
+
+    [Parameter]
+    public TimeEntry? Entry { get; set; }
+
+    [Parameter]
+    public Day? Day { get; set; }
+
+    [Parameter]
+    public EventCallback Committed { get; set; }
+
+    private string[] _activities = new[] { "One activity", "Some other activity" };
+
+    public void Toggle(MouseEventArgs obj)
+    {
+        Menu.PopoverStyle = $"margin-top: {obj.ClientY}px; margin-left: {obj.ClientX}px";
+        Console.WriteLine(Menu.PopoverStyle);
+        Menu.ToggleMenu(obj);
+    }
+
+    private async Task Callback(string activity)
+    {
+        if (Entry != null && Day != null)
+        {
+            Entry.Title = activity;
+            await Committed.InvokeAsync();
+        }
+    }
+
+}

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
+using MudBlazor.Services;
 using TimeyWimey;
 using TimeyWimey.Data;
 using TimeyWimey.Infrastructure;
@@ -20,6 +21,8 @@ builder.Services.AddSingleton<TimeLineCalculator>();
 
 builder.Services.AddSingleton<MouseService>();
 builder.Services.AddSingleton<DataPersistence>();
+builder.Services.AddMudServices();
+
 builder.Services.AddSingleton<IMouseService>(sp => sp.GetRequiredService<MouseService>());
 
 builder.Services.AddWimeyDbContext();

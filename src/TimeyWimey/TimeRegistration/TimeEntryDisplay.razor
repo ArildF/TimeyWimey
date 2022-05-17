@@ -1,6 +1,7 @@
 @using TimeyWimey.Model
 @using TimeyWimey.Infrastructure
 @using TimeyWimey.Data
+@using MudBlazor;
 @inject TimeLineCalculator _lineCalculator;
 @inject DataPersistence _persistence;
 
@@ -15,8 +16,10 @@ var height = _lineCalculator.HourVerticalPosition(Entry.End.ToTimeSpan()) - y;
 var textPos = y + (height / 2);
 var bottom = y + height;
 
-<rect fill="lightgreen" y="@(y)%" x="0" height="@(height)%" width="100%" rx="12" ry="12">
+    <rect fill="lightgreen" y="@(y)%" x="0" height="@(height)%" width="100%" rx="12" ry="12"
+          style="cursor: pointer" @onclick="e => Menu.Toggle(e)">
 </rect>
+<TimeEntryMenu @ref=@Menu Committed="StateHasChanged" Day="Day" Entry="Entry"/>
 <text>
     <text x="50%" y="@(textPos)%" class="entryTitle" width="100%">@Entry.Title</text>
 </text>
@@ -41,6 +44,9 @@ var bottom = y + height;
 
     [Parameter]
     public ElementReference SvgElement { get; set; }
+
+    private bool _isOpen;
+    private double _mousePosY;
 
     public double YTop { get; set; }
     public double YBottom { get; set; }
@@ -128,5 +134,8 @@ var bottom = y + height;
     {
         await _persistence.Save(Day!);
     }
+
+
+    public TimeEntryMenu Menu { get; set; }
 
 }
