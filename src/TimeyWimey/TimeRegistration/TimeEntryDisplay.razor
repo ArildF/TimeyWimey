@@ -2,6 +2,7 @@
 @using TimeyWimey.Infrastructure
 @using TimeyWimey.Data
 @using MudBlazor;
+@using MudBlazor.Utilities
 @inject TimeLineCalculator _lineCalculator;
 @inject DataPersistence _persistence;
 
@@ -21,7 +22,7 @@ var bottom = y + height;
 </rect>
 <TimeEntryMenu @ref=@Menu Committed="TimeEntryCommitted" Day="Day" Entry="Entry"/>
 <text>
-    <text x="50%" y="@(textPos)%" class="entryTitle" width="100%">@Entry.Title</text>
+    <text x="50%" y="@(textPos)%" class="entryTitle" style="fill: @(CalculateForegroundTextColor())" width="100%">@Entry.Title</text>
 </text>
     <EntryTimeDraggable  @bind-Y="YTop" X="0" SvgElement="@SvgElement" @bind-YPercent="YPercentTop"
                          DragCompleted="async () => await TopDragCompleted()">
@@ -143,6 +144,19 @@ var bottom = y + height;
     {
         await Save();
         StateHasChanged();
+    }
+
+    private string CalculateForegroundTextColor()
+    {
+        try
+        {
+            var color = new MudColor(Entry.Color);
+            return color.L > 0.5 ? "black" : "white";
+        }
+        catch (Exception)
+        {
+            return "black";
+        }
     }
 
 }
