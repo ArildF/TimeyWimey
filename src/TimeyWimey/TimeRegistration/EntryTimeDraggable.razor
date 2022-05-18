@@ -121,8 +121,6 @@
         var rect = await _jsRuntime.InvokeAsync<BoundingClientRect>("domGetBoundingClientRect", SvgElement);
 
         YPercent = (100.0 / rect.Height) * e.OffsetY;
-        var dump = JsonSerializer.Serialize(e, new JsonSerializerOptions{WriteIndented = true});
-        Console.WriteLine($"OnMove YPercent: {YPercent}, rect.Height: {rect.Height}, e: {dump}");
         await YPercentChanged.InvokeAsync(YPercent);
     }
 
