@@ -78,6 +78,7 @@ public class DataPersistence
         var days = await db.Days.Where(d => dates.Contains(d.Date))
             .Include(d => d.Entries)
             .ThenInclude(e => e.Activity)
+            .AsNoTracking()
             .ToDictionaryAsync(d => d.Date);
 
         Day GetOrCreate(DateOnly date) => days.TryGetValue(date, out var res)
