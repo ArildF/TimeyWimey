@@ -7,15 +7,22 @@
 
 <MudMenu @ref="Menu">
     <ChildContent>
-        <MudTextField Placeholder="Search" T="string" Value="_searchText" Style="padding-left: 6px"
-                      AdornmentIcon="@Icons.Filled.Search" DebounceInterval="500" 
-                      ValueChanged="(string term) => Search(term)"/>
+        <div class="d-flex flex-row">
+        <div class="d-flex flex-column">
+            <MudTextField Placeholder="Search" T="string" Value="_searchText" Style="padding-left: 6px"
+                          AdornmentIcon="@Icons.Filled.Search" DebounceInterval="500" 
+                          ValueChanged="(string term) => Search(term)"/>
 
-        <MudMenuItem OnClick="New">[New...]</MudMenuItem>
-        @foreach (var activity in _filteredActivities)
-        {
-            <MudMenuItem OnClick="async () => await SetActivity(activity)">@activity.Name</MudMenuItem>
-        }
+            <MudMenuItem OnClick="New">[New...]</MudMenuItem>
+            @foreach (var activity in _filteredActivities)
+            {
+                <MudMenuItem OnClick="async () => await SetActivity(activity)">@activity.Name</MudMenuItem>
+            }
+        </div>
+        <div class="d-flex flex-column">
+            <MudTextField @bind-Value="Entry.Title" Label="Title" @onkeypress="OnKeyPress"/>
+        </div>
+        </div>
     </ChildContent>
 </MudMenu>
 @code {
@@ -56,6 +63,15 @@
             string.IsNullOrWhiteSpace(term) || 
             (a.Name?.Contains(term, StringComparison.InvariantCultureIgnoreCase) ?? false))
             .ToArray();
+    }
+
+    private async Task OnKeyPress(KeyboardEventArgs arg)
+    {
+        if (arg.Key == "Enter")
+        {
+            await Committed.InvokeAsync();
+            await Toggle(new MouseEventArgs());
+        }
     }
 
     private async Task SetActivity(TimeActivity activity)
@@ -101,5 +117,7 @@
         }
 
     }
+
+}
 
 }

@@ -24,6 +24,12 @@ var bottom = y + height;
 <text>
     <text x="50%" y="@(textPos)%" class="entryTitle" style="fill: @(CalculateForegroundTextColor())" width="100%">@Entry.Title</text>
 </text>
+@if (Entry.Activity != null && Entry.Title != Entry.Activity.Name)
+{
+    <text>
+        <text x="50%" y="@(textPos + 1)%" class="entryTitle" style="font-size: 1rem; fill: @(CalculateForegroundTextColor())" width="100%">@Entry.Activity.Name</text>
+    </text>
+}
     <EntryTimeDraggable  @bind-Y="YTop" X="0" SvgElement="@SvgElement" @bind-YPercent="YPercentTop"
                          DragCompleted="async () => await TopDragCompleted()">
     <rect fill="@Entry.Color" height="5px" width="100%" y="@(y)%"/>
