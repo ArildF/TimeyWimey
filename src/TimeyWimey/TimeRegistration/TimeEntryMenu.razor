@@ -7,21 +7,26 @@
 
 <MudMenu @ref="Menu">
     <ChildContent>
-        <div class="d-flex flex-row">
         <div class="d-flex flex-column">
-            <MudTextField Placeholder="Search" T="string" Value="_searchText" Style="padding-left: 6px"
-                          AdornmentIcon="@Icons.Filled.Search" DebounceInterval="500" 
-                          ValueChanged="(string term) => Search(term)"/>
+            <div class="d-flex flex-row">
+                <div class="d-flex flex-column">
+                    <MudTextField Placeholder="Search" T="string" Value="_searchText" Style="padding-left: 6px"
+                                  AdornmentIcon="@Icons.Filled.Search" DebounceInterval="500" 
+                                  ValueChanged="(string term) => Search(term)"/>
 
-            <MudMenuItem OnClick="New">[New...]</MudMenuItem>
-            @foreach (var activity in _filteredActivities)
-            {
-                <MudMenuItem OnClick="async () => await SetActivity(activity)">@activity.Name</MudMenuItem>
-            }
-        </div>
-        <div class="d-flex flex-column">
-            <MudTextField @bind-Value="Entry.Title" Label="Title" @onkeypress="OnKeyPress"/>
-        </div>
+                    <MudMenuItem OnClick="New">[New...]</MudMenuItem>
+                    @foreach (var activity in _filteredActivities!)
+                    {
+                        <MudMenuItem OnClick="async () => await SetActivity(activity)">@activity.Name</MudMenuItem>
+                    }
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="async () => await DeleteEntry(Entry)"></MudIconButton>
+                </div>
+                <div class="d-flex flex-column">
+                    <MudTextField @bind-Value="Entry.Title" Label="Title" @onkeypress="OnKeyPress"/>
+                </div>
+            </div>
+            <div class="d-flex flex-row">
+            </div>
         </div>
     </ChildContent>
 </MudMenu>
@@ -116,6 +121,13 @@
             await AssignActivity(activity);
         }
 
+    }
+
+    private async Task DeleteEntry(TimeEntry entry)
+    {
+        Day.Entries.Remove(entry);
+        await _persistence.Delete(entry);
+        await Committed.InvokeAsync();
     }
 
 }

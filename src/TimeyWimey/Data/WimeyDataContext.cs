@@ -11,6 +11,7 @@ public class WimeyDataContext : DbContext
     }
     public DbSet<Day>? Days { get; set; }
     public DbSet<TimeActivity> Activities { get; set; }
+    public DbSet<TimeEntry> Entries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder b)
     {

@@ -95,4 +95,11 @@ public class DataPersistence
         await using var db = await _contextFactory.CreateDbContextAsync();
         return await db.Activities.ToArrayAsync();
     }
+
+    public async Task Delete(TimeEntry entry)
+    {
+        await using var db = await _contextFactory.CreateDbContextAsync();
+        db.Entries.Remove(entry);
+        await db.SaveChangesAsync();
+    }
 }
