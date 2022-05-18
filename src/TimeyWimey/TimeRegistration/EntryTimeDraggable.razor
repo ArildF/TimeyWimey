@@ -3,6 +3,7 @@
 @using System.Text.Json.Serialization
 @inject IMouseService _mouseService;
 @inject IJSRuntime _jsRuntime;
+@implements IDisposable;
 
 <g cursor="ns-resize" @onmousedown="OnDown" @onmousedown:stopPropagation="true"
    transform="translate(@_x, @_y)">
