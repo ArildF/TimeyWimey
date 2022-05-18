@@ -12,13 +12,13 @@
 }
 
 @{
-var y = _lineCalculator.HourVerticalPosition(Entry.Start);
+var y = _lineCalculator.HourVerticalPosition(Entry!.Start);
 var height = _lineCalculator.HourVerticalPosition(Entry.End.ToTimeSpan()) - y;
 var textPos = y + (height / 2);
 var bottom = y + height;
 
     <rect fill="@Entry.Color" y="@(y)%" x="0" height="@(height)%" width="100%" rx="3" ry="3"
-          style="cursor: pointer" @onclick="async e => await Menu.Toggle(e)">
+          style="cursor: pointer" @onclick="async e => await Menu!.Toggle(e)">
 </rect>
 <TimeEntryMenu @ref=@Menu Committed="TimeEntryCommitted" Day="Day" Entry="Entry"/>
 <text>
@@ -52,8 +52,6 @@ var bottom = y + height;
     [Parameter]
     public ElementReference SvgElement { get; set; }
 
-    private bool _isOpen;
-    private double _mousePosY;
 
     public double YTop { get; set; }
     public double YBottom { get; set; }
@@ -156,7 +154,7 @@ var bottom = y + height;
     {
         try
         {
-            var color = new MudColor(Entry.Color);
+            var color = new MudColor(Entry!.Color);
             return color.L > 0.5 ? "black" : "white";
         }
         catch (Exception)

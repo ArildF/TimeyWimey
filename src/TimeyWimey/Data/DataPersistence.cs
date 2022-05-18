@@ -25,11 +25,11 @@ public class DataPersistence
         await using var db = await _contextFactory.CreateDbContextAsync();
         if (day.Id != 0)
         {
-            db.Days.Update(day);
+            db.Days!.Update(day);
         }
         else
         {
-            await db.Days.AddAsync(day);
+            await db.Days!.AddAsync(day);
         }
         await db.SaveChangesAsync();
 
@@ -54,7 +54,7 @@ public class DataPersistence
 
     private async Task Sync()
     {
-        await _module.InvokeVoidAsync("syncDatabase", false);
+        await _module!.InvokeVoidAsync("syncDatabase", false);
     }
 
 

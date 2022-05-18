@@ -19,7 +19,7 @@
                     {
                         <MudMenuItem OnClick="async () => await SetActivity(activity)">@activity.Name</MudMenuItem>
                     }
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="async () => await DeleteEntry(Entry)"></MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="async () => await DeleteEntry(Entry!)"></MudIconButton>
                 </div>
                 <div class="d-flex flex-column">
                     <MudTextField @bind-Value="Entry.Title" Label="Title" @onkeypress="OnKeyPress"/>
@@ -31,7 +31,7 @@
     </ChildContent>
 </MudMenu>
 @code {
-    private MudMenu Menu { get; set; }
+    private MudMenu? Menu { get; set; }
 
     [Parameter]
     public TimeEntry? Entry { get; set; }
@@ -45,8 +45,9 @@
     private TimeActivity[]? _filteredActivities;
 
     private TimeActivity[]? _activities;
-    private MudTextField<string>? _search;
 
+
+    private string? _searchText;
 
     protected override async Task OnInitializedAsync()
     {
@@ -57,14 +58,14 @@
 
     public async ValueTask Toggle(MouseEventArgs obj)
     {
-        Menu.PopoverStyle = $"margin-top: {obj.ClientY}px; margin-left: {obj.ClientX}px";
+        Menu!.PopoverStyle = $"margin-top: {obj.ClientY}px; margin-left: {obj.ClientX}px";
         Menu.ToggleMenu(obj);
     }
 
     private void Search(string term)
     {
         _searchText = term;
-        _filteredActivities = _activities.Where(a => 
+        _filteredActivities = _activities!.Where(a => 
             string.IsNullOrWhiteSpace(term) || 
             (a.Name?.Contains(term, StringComparison.InvariantCultureIgnoreCase) ?? false))
             .ToArray();
@@ -89,13 +90,11 @@
 
     private async Task AssignActivity(TimeActivity activity)
     {
-        Entry.Activity = activity;
+        Entry!.Activity = activity;
         Entry.Title = activity.Name;
         Entry.Color = activity.Color;
         await Committed.InvokeAsync();
     }
-
-    private string? _searchText;
 
 
     private async Task New()
@@ -125,7 +124,7 @@
 
     private async Task DeleteEntry(TimeEntry entry)
     {
-        Day.Entries.Remove(entry);
+        Day!.Entries.Remove(entry);
         await _persistence.Delete(entry);
         await Committed.InvokeAsync();
     }
