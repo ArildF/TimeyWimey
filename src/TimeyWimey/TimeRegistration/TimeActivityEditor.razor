@@ -12,7 +12,7 @@
         <div class="d-flex flex-column full-width">
             <MudTextField T="string" @ref="_nameField" Label="Name" @bind-Value="Activity.Name"></MudTextField>
             <MudColorPicker DisablePreview="false" Label="Color" @bind-Text="Activity.Color"
-            ColorPickerMode="ColorPickerMode.RGB"
+            ColorPickerMode="ColorPickerMode.HSL"
                             Style='@($"background: {Activity.Color}")'></MudColorPicker>
         </div>
         </DialogContent>
