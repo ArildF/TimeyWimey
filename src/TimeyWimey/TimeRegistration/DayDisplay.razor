@@ -84,10 +84,10 @@
         var timeEntry = new TimeEntry
         {
             Description = "Description",
-            Title = "Some activity",
+            Title = "",
             Start = timeOnly,
             End = timeOnly.AddHours(0.5),
-            Color = "hotpink",
+            Color = "#FF00FF", // Fuchsia
         };
         Day.Entries.Add(timeEntry);
         await _persistence.Save(Day);
