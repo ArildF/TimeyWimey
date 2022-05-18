@@ -17,7 +17,7 @@ var height = _lineCalculator.HourVerticalPosition(Entry.End.ToTimeSpan()) - y;
 var textPos = y + (height / 2);
 var bottom = y + height;
 
-    <rect fill="@Entry.Color" y="@(y)%" x="0" height="@(height)%" width="100%" rx="12" ry="12"
+    <rect fill="@Entry.Color" y="@(y)%" x="0" height="@(height)%" width="100%" rx="3" ry="3"
           style="cursor: pointer" @onclick="async e => await Menu.Toggle(e)">
 </rect>
 <TimeEntryMenu @ref=@Menu Committed="TimeEntryCommitted" Day="Day" Entry="Entry"/>
@@ -32,12 +32,12 @@ var bottom = y + height;
 }
     <EntryTimeDraggable  @bind-Y="YTop" X="0" SvgElement="@SvgElement" @bind-YPercent="YPercentTop"
                          DragCompleted="async () => await TopDragCompleted()">
-    <rect fill="@Entry.Color" height="5px" width="100%" y="@(y)%"/>
+    <rect fill="#00000000" height="5px" width="100%" y="@(y)%"/>
     <rect fill="black" height="1px" width="100%" y="@(y)%"/>
 </EntryTimeDraggable>
     <EntryTimeDraggable X="0" SvgElement="@SvgElement" @bind-Y="YBottom" @bind-YPercent="YPercentBottom"
                         DragCompleted="async () => await BottomDragCompleted()">
-    <rect fill="@Entry.Color" x="0" y = "@(bottom)%" height="5px" width="100%"/>A
+    <rect fill="#00000000" x="0" y = "@(bottom)%" height="5px" width="100%"/>
     <rect fill="black" height="1px" width="100%" y="@(bottom)%"/>
 </EntryTimeDraggable>
 }
