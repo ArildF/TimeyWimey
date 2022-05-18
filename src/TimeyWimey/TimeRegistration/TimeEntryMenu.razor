@@ -7,8 +7,9 @@
 
 <MudMenu @ref="Menu">
     <ChildContent>
-        <MudTextField Placeholder="Search" Value="_searchText" Style="padding-left: 6px"
-                      AdornmentIcon="@Icons.Filled.Search" DebounceInterval="500" ValueChanged="(string term) => Search(term)"/>
+        <MudTextField Placeholder="Search" T="string" Value="_searchText" Style="padding-left: 6px"
+                      AdornmentIcon="@Icons.Filled.Search" DebounceInterval="500" 
+                      ValueChanged="(string term) => Search(term)"/>
 
         <MudMenuItem OnClick="New">[New...]</MudMenuItem>
         @foreach (var activity in _filteredActivities)
@@ -31,7 +32,9 @@
 
     private TimeActivity[]? _filteredActivities;
 
-    private TimeActivity[]? _activities; 
+    private TimeActivity[]? _activities;
+    private MudTextField<string>? _search;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -39,7 +42,8 @@
         _filteredActivities = _activities;
     }
 
-    public void Toggle(MouseEventArgs obj)
+
+    public async ValueTask Toggle(MouseEventArgs obj)
     {
         Menu.PopoverStyle = $"margin-top: {obj.ClientY}px; margin-left: {obj.ClientX}px";
         Menu.ToggleMenu(obj);
@@ -71,6 +75,7 @@
     }
 
     private string? _searchText;
+
 
     private async Task New()
     {

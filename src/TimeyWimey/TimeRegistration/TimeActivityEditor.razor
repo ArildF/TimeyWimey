@@ -10,7 +10,7 @@
             return;
         }
         <div class="d-flex flex-column full-width">
-            <MudTextField Label="Name" @bind-Value="Activity.Name"></MudTextField>
+            <MudTextField T="string" @ref="_nameField" Label="Name" @bind-Value="Activity.Name"></MudTextField>
             <MudColorPicker DisablePreview="false" Label="Color" @bind-Text="Activity.Color"
             ColorPickerMode="ColorPickerMode.RGB"
                             Style='@($"background: {Activity.Color}")'></MudColorPicker>
@@ -29,6 +29,15 @@
     [CascadingParameter] public MudDialogInstance DialogInstance { get; set; } = default!;
 
 
+    private MudTextField<string>? _nameField;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _nameField.FocusAsync();
+        }
+    }
 
     private async Task Submit()
     {

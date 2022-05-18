@@ -18,7 +18,7 @@ var textPos = y + (height / 2);
 var bottom = y + height;
 
     <rect fill="@Entry.Color" y="@(y)%" x="0" height="@(height)%" width="100%" rx="12" ry="12"
-          style="cursor: pointer" @onclick="e => Menu.Toggle(e)">
+          style="cursor: pointer" @onclick="async e => await Menu.Toggle(e)">
 </rect>
 <TimeEntryMenu @ref=@Menu Committed="TimeEntryCommitted" Day="Day" Entry="Entry"/>
 <text>
