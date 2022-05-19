@@ -52,6 +52,9 @@ var bottom = y + height;
     [Parameter]
     public ElementReference SvgElement { get; set; }
 
+    [CascadingParameter]
+    public MouseEventArgs? CurrentMouseEventArgs { get; set; }
+
 
     public double YTop { get; set; }
     public double YBottom { get; set; }
@@ -94,6 +97,14 @@ var bottom = y + height;
                 YBottom = 0;
                 StateHasChanged();
             }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Entry.NeedsInitializaton)
+        {
+            await Menu!.Toggle(CurrentMouseEventArgs ?? new MouseEventArgs());
         }
     }
 
@@ -155,7 +166,7 @@ var bottom = y + height;
         try
         {
             var color = new MudColor(Entry!.Color);
-            return color.L > 0.5 ? "black" : "white";
+            return color.L > 0.45 ? "black" : "white";
         }
         catch (Exception)
         {

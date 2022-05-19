@@ -20,4 +20,7 @@ public class TimeEntry
     [Key]
 
     public int Id { get; set; }
+
+    [NotMapped]
+    public bool NeedsInitializaton { get; set; }
 }

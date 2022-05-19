@@ -34,7 +34,9 @@
     
     
 }
-<TimeEntriesDisplay Day="Day" SvgElement="SvgElement"/>
+<CascadingValue Value="@_currentMouseEventArgs">
+    <TimeEntriesDisplay Day="Day" SvgElement="SvgElement"/>
+</CascadingValue>
 
 @foreach (var (time, y, _, hour) in EnumerateDay(24))
 {
@@ -61,6 +63,8 @@
 
 
     public ElementReference SvgElement { get; set; }
+    private MouseEventArgs _currentMouseEventArgs;
+
 
     private IEnumerable<(TimeOnly time, double y, double height, int index)> EnumerateDay(int chunks)
     {
@@ -77,6 +81,7 @@
 
     private async Task CreateChunk(MouseEventArgs args, TimeOnly timeOnly)
     {
+        _currentMouseEventArgs = args;
         if (Day == null)
         {
             return;
@@ -88,6 +93,7 @@
             Start = timeOnly,
             End = timeOnly.AddHours(0.5),
             Color = "#FF00FF", // Fuchsia
+            NeedsInitializaton = true,
         };
         Day.Entries.Add(timeEntry);
         await _persistence.Save(Day);
