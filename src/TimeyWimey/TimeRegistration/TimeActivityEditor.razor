@@ -9,7 +9,7 @@
         {
             return;
         }
-        <div class="d-flex flex-column full-width">
+        <div class="d-flex flex-column">
             <MudTextField T="string" @ref="_nameField" Label="Name" @bind-Value="Activity.Name"></MudTextField>
             <MudColorPicker DisablePreview="false" Label="Color" @bind-Text="Activity.Color"
             ColorPickerMode="ColorPickerMode.HSL"
