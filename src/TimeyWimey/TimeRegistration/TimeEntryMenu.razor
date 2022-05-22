@@ -49,16 +49,12 @@
 
     private string? _searchText;
 
-    protected override async Task OnInitializedAsync()
-    {
-        _activities = await _persistence.GetActivities();
-        _filteredActivities = _activities;
-    }
-
 
     public async ValueTask Toggle(MouseEventArgs obj)
     {
         Menu!.PopoverStyle = $"margin-top: {obj.ClientY}px; margin-left: {obj.ClientX}px";
+        _activities = await _persistence.GetActivities();
+        _filteredActivities = _activities;
         Menu.ToggleMenu(obj);
     }
 
