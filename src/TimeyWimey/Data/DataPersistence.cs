@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 using TimeyWimey.Model;
+using TimeyWimey.Infrastructure;
 
 namespace TimeyWimey.Data;
 
@@ -10,14 +11,16 @@ public class DataPersistence
     private readonly IDbContextFactory<WimeyDataContext> _contextFactory;
     private readonly IJSRuntime _js;
     private readonly Calendar _calendar;
+    private readonly ILogger<DataPersistence> _logger;
     private IJSObjectReference? _module;
 
     public DataPersistence(IDbContextFactory<WimeyDataContext> contextFactory, IJSRuntime js,
-        Calendar calendar)
+        Calendar calendar, ILogger<DataPersistence> logger)
     {
         _contextFactory = contextFactory;
         _js = js;
         _calendar = calendar;
+        _logger = logger;
     }
 
     public async Task Save(Day day)
@@ -25,12 +28,42 @@ public class DataPersistence
         await using var db = await _contextFactory.CreateDbContextAsync();
         if (day.Id != 0)
         {
-            db.Days!.Update(day);
+            // this because multiple entries may link to the same TimeActivity id, but different instances
+            db.ChangeTracker.TrackGraph(
+                day, node =>
+                {
+                    var keyValue = node.Entry.Property("Id").CurrentValue;
+                    var entityType = node.Entry.Metadata;
+                    if (keyValue?.Equals(0) ?? false)
+                    {
+                        node.Entry.State = EntityState.Added;
+                        return;
+                    }
+
+                    var existingEntity = node.Entry.Context.ChangeTracker.Entries()
+                        .FirstOrDefault(
+                            e => Equals(e.Metadata, entityType)
+                                 && Equals(e.Property("Id").CurrentValue, keyValue));
+
+                    if (existingEntity == null)
+                    {
+                        _logger.LogDebug($"Tracking {entityType.DisplayName()} entity with key value {keyValue}");
+
+                        node.Entry.State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        _logger.LogDebug($"Discarding duplicate {entityType.DisplayName()} entity with key value {keyValue}");
+                    }
+                });
         }
         else
         {
             await db.Days!.AddAsync(day);
         }
+
+        _logger.LogDebug(() => db.ChangeTracker.DebugView.LongView);
+        
         await db.SaveChangesAsync();
 
         await Sync();
@@ -76,9 +109,9 @@ public class DataPersistence
         var dates = _calendar.GetCurrentWeek();
         await using var db = await _contextFactory.CreateDbContextAsync();
         var days = await db.Days.Where(d => dates.Contains(d.Date))
+            .AsNoTrackingWithIdentityResolution()
             .Include(d => d.Entries)
             .ThenInclude(e => e.Activity)
-            .AsNoTracking()
             .ToDictionaryAsync(d => d.Date);
 
         Day GetOrCreate(DateOnly date) => days.TryGetValue(date, out var res)
