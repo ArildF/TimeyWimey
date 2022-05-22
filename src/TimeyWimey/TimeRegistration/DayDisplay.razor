@@ -35,7 +35,9 @@
     
 }
 <CascadingValue Value="@_currentMouseEventArgs">
-    <TimeEntriesDisplay Day="Day" SvgElement="SvgElement"/>
+    <CascadingValue Value="SvgElement">
+        <TimeEntriesDisplay Day="Day"/>
+    </CascadingValue>
 </CascadingValue>
 
 @foreach (var (time, y, _, hour) in EnumerateDay(24))

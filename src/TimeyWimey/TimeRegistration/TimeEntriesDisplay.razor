@@ -9,13 +9,11 @@
 
 @foreach (var entry in Day.Entries)
 {
-    <TimeEntryDisplay SvgElement="@SvgElement" Day="@Day" Entry="@entry"/>
+    <TimeEntryDisplay Day="@Day" Entry="@entry"/>
 }
 
 @code {
     [Parameter]
     public Day? Day { get; set; }
 
-    [Parameter]
-    public ElementReference SvgElement { get; set; }
 }
