@@ -34,11 +34,6 @@
     
     
 }
-<CascadingValue Value="@_currentMouseEventArgs">
-    <CascadingValue Value="SvgElement">
-        <TimeEntriesDisplay Day="Day"/>
-    </CascadingValue>
-</CascadingValue>
 
 @foreach (var (time, y, _, hour) in EnumerateDay(24))
 {
@@ -49,6 +44,12 @@
     <line stroke="black" x1="0%" x2="100%" y1="@(y)%"
           y2="@(y)%" stroke-width="0.4px"/>
 }
+
+<CascadingValue Value="@_currentMouseEventArgs">
+    <CascadingValue Value="SvgElement">
+        <TimeEntriesDisplay Day="Day"/>
+    </CascadingValue>
+</CascadingValue>
 
 @if(Day?.Date == DateOnly.FromDateTime(DateTime.Today))
 {

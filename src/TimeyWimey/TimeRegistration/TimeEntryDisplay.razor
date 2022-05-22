@@ -17,7 +17,7 @@ var height = _lineCalculator.HourVerticalPosition(Entry.End.ToTimeSpan()) - y;
 var textPos = y + (height / 2);
 var bottom = y + height;
 
-    <rect fill="@Entry.Color" y="@(y)%" x="0" height="@(height)%" width="100%" rx="3" ry="3"
+    <rect fill="@CalculateColorWithAlpha(Entry.Color)" y="@(y)%" x="0" height="@(height)%" width="100%" rx="3" ry="3"
           style="cursor: pointer" @onclick="async e => await Menu!.Toggle(e)">
 </rect>
 <TimeEntryMenu @ref=@Menu Committed="TimeEntryCommitted" Day="Day" Entry="Entry"/>
@@ -77,7 +77,10 @@ var bottom = y + height;
         }
     }
 
+    private const byte EntryAlpha = 128;
+    private const int MinutesPerDay = 1440;
     private double _yPercentBottom;
+
 
     public double YPercentBottom
     {
@@ -144,8 +147,6 @@ var bottom = y + height;
         await Save();
     }
 
-    private const int MinutesPerDay = 1440;
-
 
     private async Task Save()
     {
@@ -171,4 +172,10 @@ var bottom = y + height;
         }
     }
 
+    private string CalculateColorWithAlpha(string? entryColor)
+    {
+        var baseColor = new MudColor(entryColor);
+        var color = new MudColor((byte)baseColor.R, (byte)baseColor.G, (byte)baseColor.B, (byte)EntryAlpha);
+        return color.ToString();
+    }
 }
