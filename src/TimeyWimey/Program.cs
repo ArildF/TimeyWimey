@@ -23,6 +23,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddSingleton<Calendar>();
 builder.Services.AddSingleton<TimeLineCalculator>();
 
+builder.Services.AddSingleton<EventAggregator>();
 builder.Services.AddSingleton<MouseService>();
 builder.Services.AddSingleton<DataPersistence>();
 builder.Services.AddMudServices();

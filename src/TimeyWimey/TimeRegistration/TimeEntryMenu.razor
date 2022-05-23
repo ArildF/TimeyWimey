@@ -1,9 +1,11 @@
 ﻿@using MudBlazor;
 @using MudBlazor.Utilities
 @using TimeyWimey.Data
+@using TimeyWimey.Infrastructure
 @using TimeyWimey.Model
 @inject IDialogService _dialogService;
 @inject DataPersistence _persistence;
+@inject EventAggregator _aggregator;
 
 <MudMenu @ref="Menu">
     <ChildContent>
@@ -15,6 +17,10 @@
                                   ValueChanged="(string term) => Search(term)"/>
 
                     <MudMenuItem OnClick="New">[New...]</MudMenuItem>
+                    @if (Entry.Activity != null)
+                    {
+                        <MudMenuItem OnClick="Edit">[Edit @Entry.Activity.Name]</MudMenuItem>
+                    }
                     @foreach (var activity in _filteredActivities!)
                     {
                         <MudMenuItem OnClick="async () => await SetActivity(activity)">@activity.Name</MudMenuItem>
@@ -88,7 +94,6 @@
     {
         Entry!.Activity = activity;
         Entry.Title = activity.Name;
-        Entry.Color = activity.Color;
         await Committed.InvokeAsync();
     }
 
@@ -96,6 +101,17 @@
     private async Task New()
     {
         var activity = new TimeActivity{Color = new MudColor(0, 255, 0, 255).ToString(MudColorOutputFormats.HexA)};
+        await EditActivity(activity, "New activity");
+    }
+
+    private async Task Edit()
+    {
+        await EditActivity(Entry!.Activity!, "Edit activity");
+        _aggregator.Publish(new TimeActivityUpdated(Entry.Activity!));
+    }
+
+    private async Task EditActivity(TimeActivity activity, string dialogTitle)
+    {
         var parameters = new DialogParameters { { nameof(TimeActivityEditor.Activity), activity } };
 
         var options = new DialogOptions
@@ -107,7 +123,7 @@
             Position = DialogPosition.Center,
         };
 
-        var d = _dialogService.Show<TimeActivityEditor>("New activity", parameters, options);
+        var d = _dialogService.Show<TimeActivityEditor>(dialogTitle, parameters, options);
         var result = await d.Result;
 
         if (!result.Cancelled)
@@ -115,7 +131,6 @@
             await _persistence.Save(activity);
             await AssignActivity(activity);
         }
-
     }
 
     private async Task DeleteEntry(TimeEntry entry)
