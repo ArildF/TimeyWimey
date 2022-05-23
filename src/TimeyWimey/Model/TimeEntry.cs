@@ -23,4 +23,6 @@ public class TimeEntry
 
     [NotMapped]
     public bool NeedsInitializaton { get; set; }
+
+    public string Notes { get; set; }
 }
