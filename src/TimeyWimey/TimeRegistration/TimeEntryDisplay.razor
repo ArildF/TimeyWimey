@@ -193,7 +193,7 @@ var bottom = y + height;
     {
         try
         {
-            var color = new MudColor(Entry!.Color);
+            var color = activityColor != null ? new MudColor(activityColor) : new MudColor("#FF00FF");
             return color.L > 0.45 ? "black" : "white";
         }
         catch (Exception)
