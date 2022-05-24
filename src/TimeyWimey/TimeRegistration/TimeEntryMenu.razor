@@ -16,10 +16,10 @@
                                   AdornmentIcon="@Icons.Filled.Search" DebounceInterval="500" 
                                   ValueChanged="(string term) => Search(term)"/>
 
-                    <MudMenuItem OnClick="New">[New...]</MudMenuItem>
+                    <MudMenuItem OnClick="New"><div style="font-weight: bold">[New...]</div></MudMenuItem>
                     @if (Entry.Activity != null)
                     {
-                        <MudMenuItem OnClick="Edit">[Edit @Entry.Activity.Name]</MudMenuItem>
+                        <MudMenuItem OnClick="Edit"><div style="font-weight: bold">[Edit '@Entry.Activity.Name'...]</div></MudMenuItem>
                     }
                     @foreach (var activity in _filteredActivities!)
                     {
