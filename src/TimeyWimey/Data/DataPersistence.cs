@@ -107,8 +107,12 @@ public class DataPersistence
         {
             await db.Database.EnsureCreatedAsync();
 
-            // to be used in newer versions
-            //db.Database.ExecuteSqlRaw("INSERT INTO DbVersion(Version) VALUES(1)");
+            await db.Database.ExecuteSqlRawAsync(@"CREATE TABLE DbVersion 
+(
+    Version INTEGER PRIMARY_KEY
+)"); 
+            // update version here when adding migrations
+            await db.Database.ExecuteSqlRawAsync("INSERT INTO DbVersion(Version) VALUES(1)");
         }
 
         await _migrations.MigrateToLatest(db);
