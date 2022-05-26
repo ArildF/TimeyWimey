@@ -25,7 +25,7 @@ var bottom = y + height;
 </rect>
 <TimeEntryMenu @ref=@Menu Committed="TimeEntryCommitted" Day="Day" Entry="Entry"/>
 <text>
-    <text x="50%" y="@(textPos)%" class="entryTitle" style="fill: @(CalculateForegroundTextColor(EntryColor))" width="100%">
+    <text x="50%" y="@(textPos)%" class="entryTitle" style="fill: @(ColorHelper.CalculateForegroundTextColor(EntryColor))" width="100%">
         @Entry.Title
         @if (!String.IsNullOrEmpty(Entry.Notes))
         {
@@ -36,7 +36,7 @@ var bottom = y + height;
 @if (Entry.Activity != null && Entry.Title != Entry.Activity.Name)
 {
     <text>
-        <text x="50%" y="@(textPos + 1)%" class="entryTitle" style="font-size: 1rem; fill: @(CalculateForegroundTextColor(EntryColor))" width="100%">@Entry.Activity.Name</text>
+        <text x="50%" y="@(textPos + 1)%" class="entryTitle" style="font-size: 1rem; fill: @(ColorHelper.CalculateForegroundTextColor(EntryColor))" width="100%">@Entry.Activity.Name</text>
     </text>
 }
     <EntryTimeDraggable  @bind-Y="YTop" X="0" @bind-YPercent="YPercentTop"
@@ -189,18 +189,6 @@ var bottom = y + height;
         StateHasChanged();
     }
 
-    private string CalculateForegroundTextColor(string? activityColor)
-    {
-        try
-        {
-            var color = activityColor != null ? new MudColor(activityColor) : new MudColor("#FF00FF");
-            return color.L > 0.45 ? "black" : "white";
-        }
-        catch (Exception)
-        {
-            return "black";
-        }
-    }
 
     private string CalculateColorWithAlpha(string? entryColor)
     {

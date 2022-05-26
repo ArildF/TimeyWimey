@@ -23,7 +23,11 @@
                     }
                     @foreach (var activity in _filteredActivities!)
                     {
-                        <MudMenuItem OnClick="async () => await SetActivity(activity)">@activity.Name</MudMenuItem>
+                        <MudMenuItem OnClick="async () => await SetActivity(activity)">
+                            <div style="background: @activity.Color; color: @ColorHelper.CalculateForegroundTextColor(activity.Color)">
+                                @activity.Name
+                            </div>
+                        </MudMenuItem>
                     }
                     <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="async () => await DeleteEntry(Entry!)"></MudIconButton>
                 </div>
