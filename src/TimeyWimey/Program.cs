@@ -26,6 +26,7 @@ builder.Services.AddSingleton<TimeLineCalculator>();
 builder.Services.AddSingleton<EventAggregator>();
 builder.Services.AddSingleton<MouseService>();
 builder.Services.AddSingleton<DataPersistence>();
+builder.Services.AddSingleton<SchemaMigrations>();
 builder.Services.AddMudServices();
 
 builder.Services.AddSingleton<IMouseService>(sp => sp.GetRequiredService<MouseService>());

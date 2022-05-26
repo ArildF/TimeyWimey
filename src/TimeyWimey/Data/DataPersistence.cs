@@ -11,15 +11,17 @@ public class DataPersistence
     private readonly IDbContextFactory<WimeyDataContext> _contextFactory;
     private readonly IJSRuntime _js;
     private readonly Calendar _calendar;
+    private readonly SchemaMigrations _migrations;
     private readonly ILogger<DataPersistence> _logger;
     private IJSObjectReference? _module;
 
     public DataPersistence(IDbContextFactory<WimeyDataContext> contextFactory, IJSRuntime js,
-        Calendar calendar, ILogger<DataPersistence> logger)
+        Calendar calendar, SchemaMigrations migrations, ILogger<DataPersistence> logger)
     {
         _contextFactory = contextFactory;
         _js = js;
         _calendar = calendar;
+        _migrations = migrations;
         _logger = logger;
     }
 
@@ -101,7 +103,16 @@ public class DataPersistence
         }
 
         await using var db = await _contextFactory.CreateDbContextAsync();
-        await db.Database.EnsureCreatedAsync();
+        if (!await db.Database.CanConnectAsync())
+        {
+            await db.Database.EnsureCreatedAsync();
+
+            // to be used in newer versions
+            //db.Database.ExecuteSqlRaw("INSERT INTO DbVersion(Version) VALUES(1)");
+        }
+
+        await _migrations.MigrateToLatest(db);
+        await Sync();
     }
 
     public async Task<Day[]> GetCurrentWeek()
