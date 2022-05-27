@@ -1,0 +1,104 @@
+﻿@page "/EditTimeCodes"
+@using TimeyWimey.Model
+@using TimeyWimey.Data
+@using MudBlazor;
+@inject DataPersistence _persistence;
+@inject IDialogService _dialogService;
+<MudText Align="Align.Center" Typo="Typo.h4">Edit time codes</MudText>
+@if (_codes != null && _systems != null)
+{
+    <MudGrid>
+        @foreach (var code in _codes)
+        {
+            @*<div class="d-flex flex-row">*@
+            <MudItem xs="4">
+                <MudSelect T="TimeCodeSystem" @bind-Value="code.System" Label="Code system"
+                   ToStringFunc="s => s.Name">
+                    @foreach (var system in _systems)
+                    {
+                        <MudSelectItem T="TimeCodeSystem" Value="system">@system.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="4">
+                <MudTextField T="string" @bind-Value="code.Code" Label="Code" />
+            </MudItem>
+            <MudItem xs="4">
+                <MudTextField T="string" @bind-Value="code.Description" Label="Description" />
+            </MudItem>
+            @*</div>*@
+        }
+        <MudItem xs="12">
+            @if (_systems.Any())
+            {
+                <div class="d-flex justify-content-center align-content-center">
+                    <MudIconButton Icon="@Icons.Filled.PlusOne" OnClick="CreateNewCode"/>
+                </div>
+            }
+        </MudItem>
+        <MudItem xs="12">
+        @if (_codes.Any())
+        {
+            <div class="d-flex justify-content-center align-content-center">
+                <MudIconButton Icon="@Icons.Filled.Save" OnClick="Save" />
+            </div>
+        }
+        </MudItem>
+        <MudItem xs="12">
+        <div class="d-flex justify-content-center align-content-center">
+            <MudButton OnClick="CreateNewCodeSystem">Create new code system</MudButton>
+        </div>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    private List<TimeCode>? _codes;
+    private List<TimeCodeSystem>? _systems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _codes = await _persistence.GetTimeCodes();
+        _systems = await _persistence.GetTimeCodeSystems();
+    }
+
+    private async Task CreateNewCode()
+    {
+        var timeCode = new TimeCode();
+        _codes!.Add(timeCode);
+    }
+
+    private async Task CreateNewCodeSystem()
+    {
+        var system = new TimeCodeSystem();
+
+        var parameters = new DialogParameters { { nameof(EditTimeCodeSystem.System), system } };
+
+        var options = new DialogOptions
+            {
+                CloseButton = true,
+                DisableBackdropClick = false,
+                MaxWidth = MaxWidth.Large,
+                FullWidth = true,
+                Position = DialogPosition.Center,
+            };
+
+        var d = _dialogService.Show<EditTimeCodeSystem>("New code system", parameters, options);
+        var result = await d.Result;
+        if (!result.Cancelled)
+        {
+            await _persistence.NewTimeCodeSystem(system);
+            _systems!.Add(system);
+        }
+
+    }
+
+    private async Task Save()
+    {
+        foreach (var timeCode in _codes)
+        {
+            await _persistence.Save(timeCode);
+        }
+    }
+
+}

@@ -1,0 +1,40 @@
+﻿@using MudBlazor;
+@using TimeyWimey.Model
+<EditForm OnValidSubmit="Submit" Model="System">
+    <MudDialog>
+        <DialogContent>
+            @if (System == null)
+            {
+                return;
+            }
+            <div class="d-flex flex-column">
+                <MudTextField T="string" AutoFocus="true" Label="Name" @bind-Value="System.Name"></MudTextField>
+                <MudTextField T="string" Label="Description" @bind-Value="System.Description"></MudTextField>
+            </div>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Save</MudButton>
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public TimeCodeSystem? System { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance DialogInstance { get; set; } = default!;
+
+    private void Submit()
+    {
+        DialogInstance.Close(true);
+    }
+
+    private void Cancel()
+    {
+        DialogInstance.Close(false);
+    }
+
+}
