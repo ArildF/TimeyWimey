@@ -155,7 +155,10 @@ public class DataPersistence
     public async Task<List<TimeCode>> GetTimeCodes()
     {
         await using var db = await _contextFactory.CreateDbContextAsync();
-        return await db.TimeCodes.Include(t => t.System).ToListAsync();
+        return await db.TimeCodes
+            .Include(t => t.System)
+            .Include(t => t.Activities)
+            .ToListAsync();
     }
 
     public async Task NewTimeCodeSystem(TimeCodeSystem system)
@@ -180,5 +183,14 @@ public class DataPersistence
         await db.SaveChangesAsync();
         await Sync();
 
+    }
+
+    public async Task Delete(TimeCode code)
+    {
+        await using var db = await _contextFactory.CreateDbContextAsync();
+        db.TimeCodes.Remove(code);
+
+        await db.SaveChangesAsync();
+        await Sync();
     }
 }

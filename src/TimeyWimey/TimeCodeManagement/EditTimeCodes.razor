@@ -10,7 +10,6 @@
     <MudGrid>
         @foreach (var code in _codes)
         {
-            @*<div class="d-flex flex-row">*@
             <MudItem xs="4">
                 <MudSelect T="TimeCodeSystem" @bind-Value="code.System" Label="Code system"
                    ToStringFunc="s => s.Name">
@@ -20,13 +19,18 @@
                     }
                 </MudSelect>
             </MudItem>
-            <MudItem xs="4">
+            <MudItem xs="3">
                 <MudTextField T="string" @bind-Value="code.Code" Label="Code" />
             </MudItem>
             <MudItem xs="4">
                 <MudTextField T="string" @bind-Value="code.Description" Label="Description" />
             </MudItem>
-            @*</div>*@
+            <MudItem xs="1">
+                @if (!code.Activities.Any())
+                {
+                    <MudIconButton Icon="@Icons.Filled.DeleteForever" OnClick="async () => await DeleteCode(code)"></MudIconButton>
+                }
+            </MudItem>
         }
         <MudItem xs="12">
             @if (_systems.Any())
@@ -64,7 +68,7 @@
 
     private async Task CreateNewCode()
     {
-        var timeCode = new TimeCode();
+        var timeCode = new TimeCode { Activities = new List<TimeActivity>() };
         _codes!.Add(timeCode);
     }
 
@@ -93,9 +97,15 @@
 
     }
 
+    private async Task DeleteCode(TimeCode code)
+    {
+        await _persistence.Delete(code);
+        _codes!.Remove(code);
+    }
+
     private async Task Save()
     {
-        foreach (var timeCode in _codes)
+        foreach (var timeCode in _codes!)
         {
             await _persistence.Save(timeCode);
         }

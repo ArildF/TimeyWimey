@@ -14,4 +14,7 @@ public class TimeActivity
     public DateTime Created { get; set; } = DateTime.Now;
 
     public string? Color { get; set; }
+
+    public ICollection<TimeCode> TimeCode { get; set; }
+
 }
