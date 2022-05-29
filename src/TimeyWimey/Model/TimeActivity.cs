@@ -15,6 +15,6 @@ public class TimeActivity
 
     public string? Color { get; set; }
 
-    public ICollection<TimeCode> TimeCode { get; set; }
+    public ICollection<TimeCode> TimeCodes { get; set; }
 
 }

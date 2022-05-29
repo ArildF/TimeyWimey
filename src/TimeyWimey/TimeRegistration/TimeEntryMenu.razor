@@ -115,13 +115,17 @@
 
     private async Task New()
     {
-        var activity = new TimeActivity{Color = new MudColor(0, 255, 0, 255).ToString(MudColorOutputFormats.HexA)};
-        await EditActivity(activity, "New code");
+        var activity = new TimeActivity
+        {
+            Color = new MudColor(0, 255, 0, 255).ToString(MudColorOutputFormats.HexA),
+            TimeCodes = new List<TimeCode>(),
+        };
+        await EditActivity(activity, "New activity");
     }
 
     private async Task Edit()
     {
-        await EditActivity(Entry!.Activity!, "Edit code");
+        await EditActivity(Entry!.Activity!, "Edit activity");
         _aggregator.Publish(new TimeActivityUpdated(Entry.Activity!));
     }
 
@@ -133,8 +137,8 @@
         {
             CloseButton = true,
             DisableBackdropClick = false,
-            MaxWidth = MaxWidth.Large,
-            FullWidth = false,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true,
             Position = DialogPosition.Center,
         };
 

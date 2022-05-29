@@ -1,11 +1,14 @@
 ﻿@using TimeyWimey.Model;
 @using MudBlazor;
+@inject DataPersistence _persistence;
 @using MudBlazor.Utilities
+@using TimeyWimey.Data
+@using TimeyWimey.Infrastructure
 
 <EditForm Model="Activity" OnValidSubmit="Submit">
     <MudDialog>
         <DialogContent>
-        @if (Activity == null)
+        @if (Activity == null || _timeCodeEditModels == null || _codeSystems == null)
         {
             return;
         }
@@ -14,6 +17,45 @@
             <MudColorPicker DisablePreview="false" Label="Color" @bind-Text="Activity.Color"
             ColorPickerMode="ColorPickerMode.HSL"
                             Style='@($"background: {Activity.Color}")'></MudColorPicker>
+            <MudGrid Class="m-0">
+                <MudItem xs="5" Class="pa-1 pt-3"><div style="font-weight: bold; font-variant: all-small-caps">Code system</div></MudItem>
+                <MudItem xs="7" Class="pa-1 pt-3"><div style="font-weight: bold; font-variant: all-small-caps">Code</div></MudItem>
+                @foreach (var model in _timeCodeEditModels)
+                {
+                    <MudItem xs="5" Class="pa-1">
+                        <MudSelect T="TimeCodeSystem" Variant="Variant.Outlined" 
+                                   Margin="Margin.Dense"
+                                   ValueChanged="s => SetTimeCodeSystemValue(s, model)"
+                                   ToStringFunc="s => s.Name" Value="model.System">
+                            @foreach (var system in _codeSystems!)
+                            {
+                                <MudSelectItem T="TimeCodeSystem" Value="system">@system.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                    </MudItem>
+
+                    <MudItem xs="6" Class="pa-1">
+                        <MudSelect T="TimeCode" @bind-Value="model.Code"
+                                   Variant="Variant.Outlined" Margin="Margin.Dense"
+                                   ToStringFunc="c => c.Code">
+                            @foreach (var timeCode in (model.System?.TimeCodes).EmptyIfNull())
+                            {
+                                <MudSelectItem T="TimeCode" Value="timeCode">@timeCode.Code</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                    </MudItem>
+                    <MudItem xs="1" class="pa-1">
+                        <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => DeleteCode(model)"/>
+                    </MudItem>
+                }
+                <MudItem xs="12">
+                    <div class="d-flex justify-content-center align-content-center">
+                        <MudButton StartIcon="@Icons.Filled.AddTask" OnClick="AddTimeCode">Add time code</MudButton>
+                    </div>
+                </MudItem>
+            </MudGrid>
         </div>
         </DialogContent>
         <DialogActions>
@@ -28,6 +70,15 @@
 
     [CascadingParameter] public MudDialogInstance DialogInstance { get; set; } = default!;
 
+    private class TimeCodeEditModel
+    {
+        public TimeCodeSystem? System { get; set; }
+        public TimeCode? Code { get; set; }
+    }
+
+    private List<TimeCodeEditModel>? _timeCodeEditModels;
+    private List<TimeCodeSystem>? _codeSystems;
+
 
     private MudTextField<string>? _nameField;
 
@@ -39,14 +90,46 @@
         }
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        _codeSystems = await _persistence.GetTimeCodeSystems();
+        var systems = _codeSystems.ToDictionary(cs => cs.Id);
+        var codes = _codeSystems.SelectMany(cs => cs.TimeCodes).ToDictionary(c => c.Id);
+
+        _timeCodeEditModels = Activity!.TimeCodes.Select(tc => new TimeCodeEditModel
+        {
+            Code = codes[tc.Id],
+            System = systems[tc.System.Id]
+        }).ToList();
+    }
+
     private async Task Submit()
     {
+        Activity!.TimeCodes = _timeCodeEditModels!
+            .Where(m => m.Code != null)
+            .Select(m => m.Code!).ToArray();
         DialogInstance.Close(true);
     }
 
     private void Cancel()
     {
         DialogInstance.Close(false);
+    }
+
+    private void AddTimeCode()
+    {
+        _timeCodeEditModels.Add(new TimeCodeEditModel());
+    }
+
+    private void SetTimeCodeSystemValue(TimeCodeSystem timeCodeSystem, TimeCodeEditModel model)
+    {
+        model.System = timeCodeSystem;
+        StateHasChanged();
+    }
+
+    private void DeleteCode(TimeCodeEditModel timeCodeEditModel)
+    {
+        _timeCodeEditModels!.Remove(timeCodeEditModel);
     }
 
 }

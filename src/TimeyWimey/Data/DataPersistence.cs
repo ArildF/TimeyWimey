@@ -34,6 +34,12 @@ public class DataPersistence
             db.ChangeTracker.TrackGraph(
                 day, node =>
                 {
+                    // don't persist beyond the Day => TimeEntry level
+                    if (!(node.Entry.Entity switch { Day _ => true, TimeEntry => true, TimeActivity => true, _ => false }))
+                    {
+                        return;
+                    }
+
                     var keyValue = node.Entry.Property("Id").CurrentValue;
                     var entityType = node.Entry.Metadata;
                     if (keyValue?.Equals(0) ?? false)
@@ -76,12 +82,34 @@ public class DataPersistence
         await using var db = await _contextFactory.CreateDbContextAsync();
         if (activity.Id != 0)
         {
-            db.Activities.Update(activity);
+            var existingActivity = await db.Activities.Include(a => a.TimeCodes)
+                .SingleAsync(a => a.Id == activity.Id);
+            db.Entry(existingActivity).CurrentValues.SetValues(activity);
+            foreach (var code in existingActivity.TimeCodes)
+            {
+                if (activity.TimeCodes.All(c => c.Id != code.Id))
+                {
+                    existingActivity.TimeCodes.Remove(code);
+                }
+            }
+
+            foreach (var code in activity.TimeCodes)
+            {
+                if (existingActivity.TimeCodes.All(c => c.Id != code.Id))
+                {
+                    var c = await db.TimeCodes.FindAsync(code.Id);
+                    existingActivity.TimeCodes.Add(c);
+                }
+            }
+
+            db.Activities.Update(existingActivity);
         }
         else
         {
-            await db.Activities.AddAsync(activity);
+            db.Activities.Update(activity);
         }
+
+        _logger.LogDebug(db.ChangeTracker.DebugView.LongView);
         await db.SaveChangesAsync();
 
         await Sync();
@@ -113,6 +141,55 @@ public class DataPersistence
 )"); 
             // update version here when adding migrations
             await db.Database.ExecuteSqlRawAsync("INSERT INTO DbVersion(Version) VALUES(1)");
+
+            var systems = new[]
+            {
+                new TimeCodeSystem
+                {
+                    Name = "CTR",
+                    Description = "The least worst",
+                    TimeCodes = new[]
+                    {
+                        new TimeCode
+                        {
+                            Code = "SSA-V",
+                            Description = "Something",
+                        },
+                        new TimeCode
+                        {
+                            Code = "SSA-L",
+                            Description = "Something",
+                        },
+                        new TimeCode
+                        {
+                            Code = "SSA-T",
+                            Description = "Something",
+                        },
+                    }
+                },
+                new TimeCodeSystem()
+                {
+                    Name = "Clarity",
+                    Description = "The most worst",
+                    TimeCodes = new[]
+                    {
+                        new TimeCode
+                        {
+                            Code = "SSA-V#76",
+                            Description = "Something",
+                        },
+                        new TimeCode
+                        {
+                            Code = "SSA-V#54",
+                            Description = "Something",
+                        },
+                    }
+
+                }
+            };
+
+            db.CodeSystems.AddRange(systems);
+            await db.SaveChangesAsync();
         }
 
         await _migrations.MigrateToLatest(db);
@@ -127,6 +204,8 @@ public class DataPersistence
             .AsNoTrackingWithIdentityResolution()
             .Include(d => d.Entries)
             .ThenInclude(e => e.Activity)
+            .ThenInclude(a => a.TimeCodes)
+            .ThenInclude(tc => tc.System)
             .ToDictionaryAsync(d => d.Date);
 
         Day GetOrCreate(DateOnly date) => days.TryGetValue(date, out var res)
@@ -157,7 +236,6 @@ public class DataPersistence
         await using var db = await _contextFactory.CreateDbContextAsync();
         return await db.TimeCodes
             .Include(t => t.System)
-            .Include(t => t.Activities)
             .ToListAsync();
     }
 
@@ -169,10 +247,12 @@ public class DataPersistence
         await Sync();
     }
 
-    public async Task<List<TimeCodeSystem>?> GetTimeCodeSystems()
+    public async Task<List<TimeCodeSystem>> GetTimeCodeSystems()
     {
         await using var db = await _contextFactory.CreateDbContextAsync();
-        return await db.CodeSystems.ToListAsync();
+        return await db.CodeSystems
+            .Include(cs => cs.TimeCodes)
+            .ToListAsync();
     }
 
     public async Task Save(TimeCode code)

@@ -26,10 +26,7 @@
                 <MudTextField T="string" @bind-Value="code.Description" Label="Description" />
             </MudItem>
             <MudItem xs="1">
-                @if (!code.Activities.Any())
-                {
-                    <MudIconButton Icon="@Icons.Filled.DeleteForever" OnClick="async () => await DeleteCode(code)"></MudIconButton>
-                }
+                <MudIconButton Icon="@Icons.Filled.DeleteForever" OnClick="async () => await DeleteCode(code)"></MudIconButton>
             </MudItem>
         }
         <MudItem xs="12">
@@ -68,7 +65,7 @@
 
     private async Task CreateNewCode()
     {
-        var timeCode = new TimeCode { Activities = new List<TimeActivity>() };
+        var timeCode = new TimeCode();
         _codes!.Add(timeCode);
     }
 
