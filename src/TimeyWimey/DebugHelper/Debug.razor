@@ -1,0 +1,65 @@
+﻿@page "/Debug"
+@inject IDbContextFactory<WimeyDataContext> _contextFactory
+@using MudBlazor;
+@using TimeyWimey.Data
+@using Microsoft.EntityFrameworkCore
+@using System.Text
+@using System.Data.Common
+<h3>Debug</h3>
+<MudButton OnClick="DumpDatabase">Dump database</MudButton>
+@if (!string.IsNullOrEmpty(_databaseDump))
+{
+    <MudTextField T="string" Lines="80" Style="font-family: monospace" FullWidth="true" Text="@_databaseDump"/>
+}
+
+@code {
+
+    private string? _databaseDump;
+
+    private async Task DumpDatabase()
+    {
+        var builder = new StringBuilder();
+        await using var db = await _contextFactory.CreateDbContextAsync();
+        await using var conn = db.Database.GetDbConnection();
+        await conn.OpenAsync();
+
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT name FROM sqlite_master WHERE type='table'";
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        var tableNames = new List<string>();
+        while (await reader.ReadAsync())
+        {
+            tableNames.Add(reader.GetString(0));
+        }
+        foreach (var tableName in tableNames)
+        {
+            await DumpTable(tableName, builder, conn);
+        }
+
+        _databaseDump = builder.ToString();
+    }
+
+    private async Task DumpTable(string tableName, StringBuilder builder, DbConnection conn)
+    {
+        builder.AppendLine($"[{tableName}]");
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = $"SELECT * FROM {tableName}";
+        await using var reader = await cmd.ExecuteReaderAsync();
+        var schema = await reader.GetColumnSchemaAsync();
+        var headers = schema.Select(s => s.ColumnName)
+            .Select(s => $"{s,-25}");
+        builder.AppendLine(String.Join("", headers));
+        while (await reader.ReadAsync())
+        {
+            object[] values = new object[reader.VisibleFieldCount];
+            reader.GetValues(values);
+            var valueStrings = values.Select(v => $"{v.ToString()?.Trim()}").Select(v => $"{v,-25}");
+            builder.AppendLine(String.Join("", valueStrings));
+        }
+
+        builder.AppendLine();
+        builder.AppendLine();
+    }
+
+}
