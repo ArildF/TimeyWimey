@@ -7,14 +7,20 @@
 @using System.Data.Common
 <h3>Debug</h3>
 <MudButton OnClick="DumpDatabase">Dump database</MudButton>
-@if (!string.IsNullOrEmpty(_databaseDump))
+
+<MudTextField T="string" Lines="4" @bind-Text="_sql" />
+<MudButton OnClick="ExecuteSql">Execute SQL</MudButton>
+
+@if (!string.IsNullOrEmpty(_result))
 {
-    <MudTextField T="string" Lines="80" Style="font-family: monospace" FullWidth="true" Text="@_databaseDump"/>
+    <MudTextField T="string" Lines="80" Style="font-family: monospace" FullWidth="true" Text="@_result"/>
 }
 
 @code {
 
-    private string? _databaseDump;
+    private string? _result;
+
+    private string? _sql;
 
     private async Task DumpDatabase()
     {
@@ -37,7 +43,7 @@
             await DumpTable(tableName, builder, conn);
         }
 
-        _databaseDump = builder.ToString();
+        _result = builder.ToString();
     }
 
     private async Task DumpTable(string tableName, StringBuilder builder, DbConnection conn)
@@ -46,6 +52,14 @@
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = $"SELECT * FROM {tableName}";
         await using var reader = await cmd.ExecuteReaderAsync();
+        await DumpQueryResults(builder, reader);
+
+        builder.AppendLine();
+        builder.AppendLine();
+    }
+
+    private static async Task DumpQueryResults(StringBuilder builder, DbDataReader reader)
+    {
         var schema = await reader.GetColumnSchemaAsync();
         var headers = schema.Select(s => s.ColumnName)
             .Select(s => $"{s,-25}");
@@ -57,9 +71,29 @@
             var valueStrings = values.Select(v => $"{v.ToString()?.Trim()}").Select(v => $"{v,-25}");
             builder.AppendLine(String.Join("", valueStrings));
         }
+    }
 
-        builder.AppendLine();
-        builder.AppendLine();
+    private async Task ExecuteSql()
+    {
+        var builder = new StringBuilder();
+
+        await using var db = await _contextFactory.CreateDbContextAsync();
+        await using var conn = db.Database.GetDbConnection();
+        await conn.OpenAsync();
+
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = _sql;
+        try
+        {
+            await using var reader = await cmd.ExecuteReaderAsync();
+            await DumpQueryResults(builder, reader);
+
+            _result = builder.ToString();
+        }
+        catch (Exception e)
+        {
+            _result = e.ToString();
+        }
     }
 
 }
