@@ -1,5 +1,7 @@
 ﻿@page "/Debug"
 @inject IDbContextFactory<WimeyDataContext> _contextFactory
+@inject IJSRuntime _js;
+@inject DataPersistence _persistence;
 @using MudBlazor;
 @using TimeyWimey.Data
 @using Microsoft.EntityFrameworkCore
@@ -7,6 +9,7 @@
 @using System.Data.Common
 <h3>Debug</h3>
 <MudButton OnClick="DumpDatabase">Dump database</MudButton>
+<MudButton OnClick="DownloadDatabase">Download database file</MudButton>
 
 <MudTextField T="string" Lines="4" @bind-Text="_sql" />
 <MudButton OnClick="ExecuteSql">Execute SQL</MudButton>
@@ -94,6 +97,17 @@
         {
             _result = e.ToString();
         }
+    }
+
+    private async Task DownloadDatabase()
+    {
+        byte[] bytes = await _persistence.GetDatabaseFileContents();
+        var memStream = new MemoryStream(bytes);
+
+        using var reference = new DotNetStreamReference(memStream);
+        await _js.InvokeVoidAsync("downloadFileFromStream",
+            Path.GetFileName(DataPersistence.DatabaseFilePath),
+            reference);
     }
 
 }

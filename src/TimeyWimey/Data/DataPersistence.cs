@@ -15,6 +15,7 @@ public class DataPersistence
     private readonly ILogger<DataPersistence> _logger;
     private IJSObjectReference? _module;
 
+    public const string DatabaseFilePath = "/database/app.db";
     public DataPersistence(IDbContextFactory<WimeyDataContext> contextFactory, IJSRuntime js,
         Calendar calendar, SchemaMigrations migrations, ILogger<DataPersistence> logger)
     {
@@ -272,5 +273,10 @@ public class DataPersistence
 
         await db.SaveChangesAsync();
         await Sync();
+    }
+
+    public async Task<byte[]> GetDatabaseFileContents()
+    {
+        return await _module!.InvokeAsync<byte[]>("readDatabaseFile", DatabaseFilePath);
     }
 }

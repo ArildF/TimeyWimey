@@ -8,7 +8,7 @@ public static class DataExtensions
     public static IServiceCollection AddWimeyDbContext(this IServiceCollection self)
     {
         self.AddDbContextFactory<WimeyDataContext>(opts => 
-            opts.UseSqlite("Filename=/database/app.db"));
+            opts.UseSqlite($"Filename={DataPersistence.DatabaseFilePath}"));
 
         return self;
     }
