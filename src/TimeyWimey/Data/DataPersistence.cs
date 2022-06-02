@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 using TimeyWimey.Model;
@@ -278,5 +279,10 @@ public class DataPersistence
     public async Task<byte[]> GetDatabaseFileContents()
     {
         return await _module!.InvokeAsync<byte[]>("readDatabaseFile", DatabaseFilePath);
+    }
+
+    public async Task<JsonElement> StatDatabaseFile()
+    {
+        return await _module!.InvokeAsync<JsonElement>("statDatabaseFile", DatabaseFilePath);
     }
 }

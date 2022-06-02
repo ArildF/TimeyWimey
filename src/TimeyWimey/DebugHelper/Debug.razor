@@ -7,9 +7,11 @@
 @using Microsoft.EntityFrameworkCore
 @using System.Text
 @using System.Data.Common
+@using System.Text.Json
 <h3>Debug</h3>
 <MudButton OnClick="DumpDatabase">Dump database</MudButton>
 <MudButton OnClick="DownloadDatabase">Download database file</MudButton>
+<MudButton OnClick="StatDatabaseFile">Stat database file</MudButton>
 
 <MudTextField T="string" Lines="4" @bind-Text="_sql" />
 <MudButton OnClick="ExecuteSql">Execute SQL</MudButton>
@@ -108,6 +110,17 @@
         await _js.InvokeVoidAsync("downloadFileFromStream",
             Path.GetFileName(DataPersistence.DatabaseFilePath),
             reference);
+    }
+
+    private async Task StatDatabaseFile()
+    {
+        var stat = await _persistence.StatDatabaseFile();
+        await using var memStream = new MemoryStream();
+        var writer = new Utf8JsonWriter(memStream, new JsonWriterOptions{Indented = true});
+        stat.WriteTo(writer);
+        await writer.FlushAsync();
+
+        _result = Encoding.UTF8.GetString(memStream.ToArray());
     }
 
 }

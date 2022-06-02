@@ -19,6 +19,10 @@ export function syncDatabase(populate) {
     });
 }
 
+export function statDatabaseFile(file) {
+    return FS.stat(file);
+}
+
 export function readDatabaseFile(file) {
     console.log(FS.stat(file));
     return FS.readFile(file);
