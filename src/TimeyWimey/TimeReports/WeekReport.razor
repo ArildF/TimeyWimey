@@ -1,0 +1,58 @@
+﻿@page "/WeekReport/{ForWeekOf}"
+@using TimeyWimey.Data
+
+@inject DataPersistence _persistence;
+@inject WeekReportGenerator _generator;
+
+
+@if (_reportsPerCodeSystem == null)
+{
+    return;
+}
+@foreach (var report in _reportsPerCodeSystem)
+{
+    <h3>@report.CodeSystem</h3>
+    <table style="min-width: 800px" class="mb-8">
+        <thead>
+            <tr>
+                <th>Code</th>
+                @foreach (var day in report.Days)
+                {
+                    <th style="text-align: center">
+                        <div>@day.DayOfWeek</div> 
+                        <div class="date">@day.Date.ToString("M")</div>
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+        @{ bool alternate = false; }
+        @foreach (var perCode in report.ReportPerCode)
+        {
+            <tr style="background: @(alternate ? "white" : "LightCyan")">
+                <td style="min-width: 80px">@perCode.Code</td>
+                @foreach (var hour in perCode.Hours)
+                {
+                    <td style="text-align: center">@hour</td>
+                }
+                @{ alternate = !alternate;}
+            </tr>
+
+        }
+        </tbody>
+    </table>
+
+}
+
+@code {
+    [Parameter]
+    public string? ForWeekOf { get; set; }
+
+    private ReportPerCodeSystem[]? _reportsPerCodeSystem;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var dateTime = DateTime.Parse(ForWeekOf!);
+        _reportsPerCodeSystem = await _generator.GenerateForWeekOf(DateOnly.FromDateTime(dateTime));
+    }
+}

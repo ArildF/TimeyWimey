@@ -16,6 +16,7 @@
         <label for="fivedayweek" style="padding-right: 5px">Five day week</label>
     </div>
 
+    <NavLink href="@ReportLink">See report</NavLink>
     <div class="flex-row d-flex" style="width: 100%">
         @foreach (var day in Days)
         {
@@ -38,17 +39,18 @@
 
     private Day[]? _days;
 
-    private Day[]? Days
-    {
-        get => _fiveDayWeek ? _days?.Take(5).ToArray() : _days;
-    }
+    private DateOnly _reportDay;
 
+    private string ReportLink => $"/WeekReport/{_reportDay.ToDateTime(TimeOnly.MinValue).ToString("s")}";
+    private Day[]? Days => _fiveDayWeek ? _days?.Take(5).ToArray() : _days;
 
     public ElementReference ScrollDiv { get; set; }
 
+
     protected override async Task OnInitializedAsync()
     {
-        _days = await _persistence.GetCurrentWeek();
+        _days = await _persistence.GetDaysForWeek(DateOnly.FromDateTime(DateTime.Now));
+        _reportDay = _days.First().Date;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

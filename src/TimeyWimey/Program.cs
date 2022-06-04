@@ -9,6 +9,7 @@ using TimeyWimey.Data;
 using TimeyWimey.Infrastructure;
 using TimeyWimey.Model;
 using TimeyWimey.TimeRegistration;
+using TimeyWimey.TimeReports;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -27,6 +28,7 @@ builder.Services.AddSingleton<EventAggregator>();
 builder.Services.AddSingleton<MouseService>();
 builder.Services.AddSingleton<DataPersistence>();
 builder.Services.AddSingleton<SchemaMigrations>();
+builder.Services.AddSingleton<WeekReportGenerator>();
 builder.Services.AddMudServices();
 
 builder.Services.AddSingleton<IMouseService>(sp => sp.GetRequiredService<MouseService>());

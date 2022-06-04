@@ -198,9 +198,9 @@ public class DataPersistence
         await Sync();
     }
 
-    public async Task<Day[]> GetCurrentWeek()
+    public async Task<Day[]> GetDaysForWeek(DateOnly date)
     {
-        var dates = _calendar.GetCurrentWeek();
+        var dates = _calendar.GetWeek(date);
         await using var db = await _contextFactory.CreateDbContextAsync();
         var days = await db.Days.Where(d => dates.Contains(d.Date))
             .AsNoTrackingWithIdentityResolution()

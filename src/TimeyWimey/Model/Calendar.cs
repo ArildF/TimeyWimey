@@ -2,11 +2,11 @@
 
 public class Calendar
 {
-    public DateOnly[] GetCurrentWeek()
+    public DateOnly[] GetWeek(DateOnly date)
     {
-        int diff = DateTime.Now.DayOfWeek == DayOfWeek.Sunday ? 6
-            : DateTime.Now.DayOfWeek - DayOfWeek.Monday;
-        var firstOfWeek = DateOnly.FromDateTime(DateTime.Now).AddDays(-diff);
+        int diff = date.DayOfWeek == DayOfWeek.Sunday ? 6
+            : date.DayOfWeek - DayOfWeek.Monday;
+        var firstOfWeek = date.AddDays(-diff);
 
 
         return Enumerable.Range(0, 7)
