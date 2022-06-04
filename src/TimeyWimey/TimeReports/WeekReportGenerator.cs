@@ -32,7 +32,9 @@ public class WeekReportGenerator
         foreach (var system in codeSystems)
         {
             var reportPerCode = GeneratePerCode(system, days).ToArray();
-            yield return new ReportPerCodeSystem(system.Name, reportPerCode, days);
+            var dayTotals = Enumerable.Range(0, days.Length)
+                .Select(i => reportPerCode.Select(rc => rc.Hours[i]).Sum()).ToArray();
+            yield return new ReportPerCodeSystem(system.Name, reportPerCode, days, dayTotals);
         }
 
     }
@@ -63,6 +65,7 @@ public class WeekReportGenerator
 
 }
 
-public record ReportPerCodeSystem(string CodeSystem, ReportPerCode[] ReportPerCode, Day[] Days);
+public record ReportPerCodeSystem(string CodeSystem, ReportPerCode[] ReportPerCode, Day[] Days, 
+    double[] DayTotals);
 
 public record ReportPerCode(string Code, double[] Hours, double Sum);

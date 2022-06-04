@@ -45,21 +45,28 @@
         @{ bool alternate = false; }
         @foreach (var perCode in report.ReportPerCode)
         {
-            <tr style="background: @(alternate ? "white" : "LightCyan")">
+            <tr style="background: @(alternate ? "white" : "LightGray")">
                 <td style="min-width: 80px; font-weight: bold">@perCode.Code</td>
                 @foreach (var hour in perCode.Hours)
                 {
-                    <td style="text-align: center">
+                    <td>
                         @(hour > 0 
                                  ? hour.ToString(CultureInfo.CurrentUICulture)
                                  : "")
                     </td>
                 }
-                <td>@perCode.Sum</td>
+                <td style="font-weight: bold">@perCode.Sum</td>
                 @{ alternate = !alternate;}
             </tr>
-
         }
+        <tr>
+            <td style="font-weight: bold">Sum</td>
+            @foreach (var total in report.DayTotals)
+            {
+                <td style="font-weight: bold">@total</td>
+            }
+            <td style="font-weight: bold">@(report.DayTotals.Sum())</td>
+        </tr>
         </tbody>
     </table>
 
