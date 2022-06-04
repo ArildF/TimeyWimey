@@ -42,21 +42,21 @@ public class WeekReportGenerator
         foreach (var timeCode in system.TimeCodes)
         {
             var hours = days.Select(day => HoursForCode(day, timeCode)).ToArray();
-            if (hours.Any(h => !string.IsNullOrEmpty(h)))
+            if (hours.Any(h => h > 0))
             {
-                yield return new ReportPerCode(timeCode.Code, hours);
+                yield return new ReportPerCode(timeCode.Code, hours, hours.Sum());
             }
         }
     }
 
-    private string HoursForCode(Day day, TimeCode timeCode)
+    private double HoursForCode(Day day, TimeCode timeCode)
     {
         var hoursPerCode = day.Entries
             .Where(e => e.Activity != null)
             .Where(e => e.Activity!.TimeCodes.Any(tc => tc == timeCode))
             .Sum(e => (e.End - e.Start).TotalHours);
 
-        return hoursPerCode > 0 ? hoursPerCode.ToString(CultureInfo.InvariantCulture) : "";
+        return hoursPerCode;
     }
 
 
@@ -65,4 +65,4 @@ public class WeekReportGenerator
 
 public record ReportPerCodeSystem(string CodeSystem, ReportPerCode[] ReportPerCode, Day[] Days);
 
-public record ReportPerCode(string Code, string[] Hours);
+public record ReportPerCode(string Code, double[] Hours, double Sum);

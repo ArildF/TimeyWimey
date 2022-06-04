@@ -1,5 +1,6 @@
 ﻿@page "/WeekReport/{ForWeekOf}"
 @using TimeyWimey.Data
+@using System.Globalization
 
 @inject DataPersistence _persistence;
 @inject WeekReportGenerator _generator;
@@ -14,6 +15,11 @@
     table, th, td {
         border: 1px solid black;
         border-collapse: collapse;
+        text-align: center;
+    }
+    .header {
+        text-align: center"
+
     }
 </style>
 @foreach (var report in _reportsPerCodeSystem)
@@ -25,11 +31,14 @@
                 <th>Code</th>
                 @foreach (var day in report.Days)
                 {
-                    <th style="text-align: center">
+                    <th class="header">
                         <div>@day.DayOfWeek</div> 
                         <div class="date">@day.Date.ToString("M")</div>
                     </th>
                 }
+                <th class="header">
+                    Sum
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -37,11 +46,16 @@
         @foreach (var perCode in report.ReportPerCode)
         {
             <tr style="background: @(alternate ? "white" : "LightCyan")">
-                <td style="min-width: 80px">@perCode.Code</td>
+                <td style="min-width: 80px; font-weight: bold">@perCode.Code</td>
                 @foreach (var hour in perCode.Hours)
                 {
-                    <td style="text-align: center">@hour</td>
+                    <td style="text-align: center">
+                        @(hour > 0 
+                                 ? hour.ToString(CultureInfo.CurrentUICulture)
+                                 : "")
+                    </td>
                 }
+                <td>@perCode.Sum</td>
                 @{ alternate = !alternate;}
             </tr>
 
