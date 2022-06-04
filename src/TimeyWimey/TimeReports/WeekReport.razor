@@ -9,6 +9,13 @@
 {
     return;
 }
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+</style>
 @foreach (var report in _reportsPerCodeSystem)
 {
     <h3>@report.CodeSystem</h3>
