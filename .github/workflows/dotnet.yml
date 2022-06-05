@@ -25,3 +25,9 @@ jobs:
       run: dotnet restore ${{env.PROJECT_DIR}}
     - name: Publish
       run: dotnet publish -o ${{env.PUBLISH_DIR}}  ${{env.PROJECT_DIR}} --no-restore
+    - name: Commit wwwroot to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@4.3.3
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: publish/wwwroot
