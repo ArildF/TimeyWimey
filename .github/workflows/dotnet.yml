@@ -1,0 +1,39 @@
+name: .NET
+
+permissions: 
+  contents: write
+
+env:
+  PROJECT_DIR: src/TimeyWimey
+  PUBLISH_DIR: publish
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore ${{env.PROJECT_DIR}}
+    - name: Publish
+      run: dotnet publish -o ${{env.PUBLISH_DIR}}  ${{env.PROJECT_DIR}} --no-restore
+    - name: Change base-tag in index.html from / to BlazorGitHubPagesDemo
+      run: sed -i 's/<base href="\/" \/>/<base href="\/TimeyWimey\/" \/>/g' publish/wwwroot/index.html
+    - name: Add .nojekyll file
+      run: touch publish/wwwroot/.nojekyll
+    - name: Commit wwwroot to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4.3.3
+      with:
+        BRANCH: gh-pages
+        FOLDER: publish/wwwroot
