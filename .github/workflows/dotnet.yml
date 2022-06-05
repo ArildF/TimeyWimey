@@ -30,6 +30,8 @@ jobs:
       run: dotnet publish -o ${{env.PUBLISH_DIR}}  ${{env.PROJECT_DIR}} --no-restore
     - name: Change base-tag in index.html from / to BlazorGitHubPagesDemo
       run: sed -i 's/<base href="\/" \/>/<base href="\/TimeyWimey\/" \/>/g' publish/wwwroot/index.html
+    - name: Add .nojekyll file
+      run: touch publish/wwwroot/.nojekyll
     - name: Commit wwwroot to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4.3.3
       with:
