@@ -26,9 +26,9 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore -c $${{env.BUILD_CONFIG}} ${{env.PROJECT_DIR}}
+      run: dotnet restore -C ${{env.BUILD_CONFIG}} ${{env.PROJECT_DIR}}
     - name: Publish
-      run: dotnet publish -c $${{env.BUILD_CONFIG}}-o ${{env.PUBLISH_DIR}}  ${{env.PROJECT_DIR}} --no-restore
+      run: dotnet publish -C ${{env.BUILD_CONFIG}}-o ${{env.PUBLISH_DIR}}  ${{env.PROJECT_DIR}} --no-restore
     - name: Change base-tag in index.html from / to BlazorGitHubPagesDemo
       run: sed -i 's/<base href="\/" \/>/<base href="\/TimeyWimey\/" \/>/g' publish/wwwroot/index.html
     - name: Add .nojekyll file
