@@ -101,11 +101,11 @@
       "url": "_framework\/icudt.dat"
     },
     {
-      "hash": "sha256-Ydyyl9cjkhfa46uUTuEzIeTIpqgp8ZyoynP1gQmS714=",
+      "hash": "sha256-or1hwB5Rl+k1x8t4Z0bttxE11QRVtK7BW+RKtu8bUfI=",
       "url": "_framework\/blazor.boot.json"
     },
     {
-      "hash": "sha256-Qzi0HRUlLJgbIMU9g2WykKafE\/JoAnPJDXyFUmsDOAk=",
+      "hash": "sha256-+uxnMMiKZZB7Wf44yb6K1QN8ome1ROzazmV5wOiDFUM=",
       "url": "_framework\/Microsoft.AspNetCore.Components.dll"
     },
     {
@@ -417,7 +417,7 @@
       "url": "_framework\/System.Transactions.Local.dll"
     },
     {
-      "hash": "sha256-jmAbYB3fvvfHL52rR7pOtC6Gj2STaMVd6PRCrEmDDbA=",
+      "hash": "sha256-ADWb0fHnqLXjlX36PCNBvo1J\/V1++hhHXJZvrjkaobg=",
       "url": "_framework\/TimeyWimey.dll"
     },
     {
@@ -445,5 +445,5 @@
       "url": "_content\/MudBlazor\/MudBlazor.min.js"
     }
   ],
-  "version": "ZtV8GP2J"
+  "version": "lwJMSBnV"
 };
