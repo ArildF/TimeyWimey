@@ -96,7 +96,7 @@
         var systems = _codeSystems.ToDictionary(cs => cs.Id);
         var codes = _codeSystems.SelectMany(cs => cs.TimeCodes).ToDictionary(c => c.Id);
 
-        _timeCodeEditModels = Activity!.TimeCodes.Select(tc => new TimeCodeEditModel
+        _timeCodeEditModels = Activity!.TimeCodes.EmptyIfNull().Select(tc => new TimeCodeEditModel
         {
             Code = codes[tc.Id],
             System = systems[tc.System.Id]
