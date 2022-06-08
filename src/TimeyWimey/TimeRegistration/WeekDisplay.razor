@@ -1,6 +1,7 @@
 ﻿@using TimeyWimey.Model
 @using Microsoft.AspNetCore.Components.WebAssembly.Infrastructure
 @using TimeyWimey.Data
+@using MudBlazor
 @inject DataPersistence _persistence;
 @inject IJSRuntime _jsRuntime;
 
@@ -12,11 +13,10 @@
 
 <div>
     <div style="display: flex; justify-content: end; align-items: center; width: 100%;">
-        <input type="checkbox" @bind="FiveDayWeek" style="width: 30px; padding: 2px" id="fivedayweek"/>
-        <label for="fivedayweek" style="padding-right: 5px">Five day week</label>
+        <MudButton HRef="@ReportLink">Show report</MudButton>
+        <MudCheckBox @bind-Checked="FiveDayWeek" Label="Five day week" Color="Color.Primary"/>
     </div>
 
-    <NavLink href="@ReportLink">See report</NavLink>
     <div class="flex-row d-flex" style="width: 100%">
         @foreach (var day in Days)
         {

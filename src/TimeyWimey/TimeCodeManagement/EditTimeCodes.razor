@@ -86,7 +86,7 @@
 
         var d = _dialogService.Show<EditTimeCodeSystem>("New code system", parameters, options);
         var result = await d.Result;
-        if (!result.Cancelled)
+        if (!result.Cancelled && (bool)result.Data)
         {
             await _persistence.NewTimeCodeSystem(system);
             _systems!.Add(system);
