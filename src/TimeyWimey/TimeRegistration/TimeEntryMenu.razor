@@ -101,7 +101,11 @@
     {
         if (Entry != null && Day != null)
         {
-            await AssignActivity(activity);
+            var existingActivity = Day.Entries
+                .Select(e => e.Activity)
+                .FirstOrDefault(a => a.Id == activity.Id);
+            var toAssign = existingActivity ?? activity;
+            await AssignActivity(toAssign);
         }
     }
 
