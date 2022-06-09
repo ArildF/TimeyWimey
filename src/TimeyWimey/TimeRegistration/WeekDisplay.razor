@@ -4,6 +4,7 @@
 @using MudBlazor
 @inject DataPersistence _persistence;
 @inject IJSRuntime _jsRuntime;
+@inject NavigationManager _navigationManager;
 
 @if (Days == null)
 {
@@ -13,7 +14,7 @@
 
 <div>
     <div style="display: flex; justify-content: end; align-items: center; width: 100%;">
-        <MudButton HRef="@ReportLink">Show report</MudButton>
+        <MudButton OnClick="() => _navigationManager.NavigateTo(ReportLink)">Show report</MudButton>
         <MudCheckBox @bind-Checked="FiveDayWeek" Label="Five day week" Color="Color.Primary"/>
     </div>
 
