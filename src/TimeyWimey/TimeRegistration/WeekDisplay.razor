@@ -14,7 +14,7 @@
 
 <div>
     <div style="display: flex; justify-content: end; align-items: center; width: 100%;">
-        <MudButton OnClick="() => _navigationManager.NavigateTo(ReportLink)">Show report</MudButton>
+        <MudButton Href="@ReportLink">Show report</MudButton>
         <MudCheckBox @bind-Checked="FiveDayWeek" Label="Five day week" Color="Color.Primary"/>
     </div>
 
@@ -42,7 +42,7 @@
 
     private DateOnly _reportDay;
 
-    private string ReportLink => $"/WeekReport/{_reportDay.ToDateTime(TimeOnly.MinValue).ToString("s")}";
+    private string ReportLink => $"WeekReport/{_reportDay.ToDateTime(TimeOnly.MinValue).ToString("s")}";
     private Day[]? Days => _fiveDayWeek ? _days?.Take(5).ToArray() : _days;
 
     public ElementReference ScrollDiv { get; set; }
