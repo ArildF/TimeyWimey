@@ -12,24 +12,29 @@
         <div class="d-flex flex-column">
             <div class="d-flex flex-row">
                 <div class="d-flex flex-column">
-                    <MudTextField Placeholder="Search" T="string" Value="_searchText" Style="padding-left: 6px"
-                                  AdornmentIcon="@Icons.Filled.Search" DebounceInterval="500" 
+                    <div class="flex-initial ml-1 pl-1">
+                    <MudTextField Placeholder="Search" T="string" Value="_searchText"
+                                  Style="padding-left: 6px flex:0 1 auto"
+                                  AdornmentIcon="@Icons.Filled.Search" DebounceInterval="500"
                                   ValueChanged="(string term) => Search(term)"/>
+                    </div>
 
-                    <MudMenuItem OnClick="New"><div style="font-weight: bold">[New...]</div></MudMenuItem>
+                    <MudMenuItem Class="ma-0 pa-0 ml-1 pl-1" OnClick="New">
+                        <div style="font-weight: bold">[New...]</div></MudMenuItem>
                     @if (Entry.Activity != null)
                     {
-                        <MudMenuItem OnClick="Edit"><div style="font-weight: bold">[Edit '@Entry.Activity.Name'...]</div></MudMenuItem>
+                        <MudMenuItem Class="ma-0 pa-0 ml-1 pl-1" OnClick="Edit">
+                            <div style="font-weight: bold">[Edit '@Entry.Activity.Name'...]</div></MudMenuItem>
                     }
                     @foreach (var activity in _filteredActivities!)
                     {
-                        <MudMenuItem OnClick="async () => await SetActivity(activity)">
+                        <MudMenuItem OnClick="async () => await SetActivity(activity)" Class="ma-0 pa-0 ml-1 pl-1">
                             <div style="background: @activity.Color; color: @ColorHelper.CalculateForegroundTextColor(activity.Color)">
                                 @activity.Name
                             </div>
                         </MudMenuItem>
                     }
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="async () => await DeleteEntry(Entry!)"></MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="async () => await DeleteEntry(Entry!)"/>
                 </div>
                 <div class="d-flex flex-column">
                     <MudTextField @bind-Value="Entry.Title" Label="Title" @onkeypress="OnKeyPress"/>
