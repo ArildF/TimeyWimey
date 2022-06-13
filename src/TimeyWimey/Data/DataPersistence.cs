@@ -142,7 +142,7 @@ public class DataPersistence
     Version INTEGER PRIMARY_KEY
 )"); 
             // update version here when adding migrations
-            await db.Database.ExecuteSqlRawAsync("INSERT INTO DbVersion(Version) VALUES(1)");
+            await db.Database.ExecuteSqlRawAsync("INSERT INTO DbVersion(Version) VALUES(2)");
 
             var systems = new[]
             {
@@ -222,7 +222,7 @@ public class DataPersistence
     public async Task<TimeActivity[]?> GetActivities()
     {
         await using var db = await _contextFactory.CreateDbContextAsync();
-        return await db.Activities.ToArrayAsync();
+        return await db.Activities.OrderByDescending(a => a.LastUsed).ToArrayAsync();
     }
 
     public async Task Delete(TimeEntry entry)
