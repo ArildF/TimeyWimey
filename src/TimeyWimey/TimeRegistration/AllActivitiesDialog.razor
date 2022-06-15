@@ -11,17 +11,18 @@
                 background-color: #1E88E5 !important;
             }
 
-            .selected > td {
+/*            .selected > td {
                 color: white !important;
             }
 
             .selected > td .mud-input {
                 color: white !important;
             }
-        </style>
+*/        </style>
         <MudTable Items="@Activities" @bind-SelectedItem="_selectedItem" Striped="true" Hover="true"
                   RowClassFunc="@SelectedRowClassFunc" Filter="Filter" 
-                  OnRowClick="e => RowClick(e)" T="TimeActivity">
+                  OnRowClick="e => RowClick(e)" T="TimeActivity"
+                  Dense="true">
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Activities</MudText>
                 <MudSpacer />
