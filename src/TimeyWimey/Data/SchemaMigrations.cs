@@ -9,6 +9,7 @@ public class SchemaMigrations
     private readonly Func<DbConnection, ILogger<SchemaMigrations>, Task>[] _migrations = 
     {
         AddNotes,
+        AddActivityLastUsed,
     };
 
     private readonly ILogger<SchemaMigrations> _logger;
@@ -92,5 +93,14 @@ CREATE TABLE DbVersion
         cmd.CommandText = "ALTER TABLE Entries ADD COLUMN Notes TEXT NULL";
         await cmd.ExecuteNonQueryAsync();
         logger.LogInformation("Added field Notes(TEXT NULL) to table Entries");
+    }
+
+    private static async Task AddActivityLastUsed(DbConnection c, ILogger<SchemaMigrations> logger)
+    {
+        logger.LogInformation("Adding field LastUsed(TEXT NULL) to table Activities");
+        var cmd = c.CreateCommand();
+        cmd.CommandText = "ALTER TABLE Activities ADD COLUMN LastUsed TEXT NULL";
+        await cmd.ExecuteNonQueryAsync();
+        logger.LogInformation("Added field LastUsed(TEXT NULL) to table Activities");
     }
 }

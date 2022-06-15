@@ -17,4 +17,6 @@ public class TimeActivity
 
     public ICollection<TimeCode> TimeCodes { get; set; }
 
+    public DateTime? LastUsed { get; set; }
+
 }
