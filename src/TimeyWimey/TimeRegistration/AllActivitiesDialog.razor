@@ -1,0 +1,119 @@
+﻿@using MudBlazor;
+@using TimeyWimey.Data
+@using TimeyWimey.Model
+@inject DataPersistence _persistence;
+
+
+<MudDialog>
+    <DialogContent >
+        <style>
+            .selected {
+                background-color: #1E88E5 !important;
+            }
+
+            .selected > td {
+                color: white !important;
+            }
+
+            .selected > td .mud-input {
+                color: white !important;
+            }
+        </style>
+        <MudTable Items="@Activities" @bind-SelectedItem="_selectedItem" Striped="true" Hover="true"
+                  RowClassFunc="@SelectedRowClassFunc" Filter="Filter" 
+                  OnRowClick="e => RowClick(e)" T="TimeActivity">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Activities</MudText>
+                <MudSpacer />
+                <MudTextField @bind-Value="_searchString" Placeholder="Search" 
+                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"
+                              DebounceInterval="250"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Color</MudTh>
+                <MudTh>Created</MudTh>
+                <MudTh>Last used</MudTh>
+                <MudTh>Time codes</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Color">
+                    <div style="background-color: @context.Color">@context.Color</div></MudTd>
+                <MudTd DataLabel="Created">@context.Created</MudTd>
+                <MudTd DataLabel="Last used">@context.LastUsed</MudTd>
+                <MudTd DataLabel="Time codes">
+                    <div class="d-flex flex-row flex-wrap">
+                        @foreach (var timeCode in context.TimeCodes)
+                        {
+                            <div class="m-1 p-1" style="background-color: lightcyan">@timeCode.System.Name - @timeCode.Code</div>
+                        }
+                    </div>
+                </MudTd>
+            </RowTemplate>
+
+            <PagerContent>
+                <MudTablePager/>
+            </PagerContent>
+
+        </MudTable>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit"
+                   Disabled="SubmitDisabled" OnClick="Submit">Select</MudButton>
+        @*<MudButton OnClick="Cancel">Cancel</MudButton>*@
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    public TimeActivity[]? Activities { get; set; }
+    [CascadingParameter] public MudDialogInstance DialogInstance { get; set; } = default!;
+
+    private TimeActivity? _selectedItem;
+    private bool SubmitDisabled => _selectedItem == null;
+
+    private string? _searchString;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Activities = await _persistence.GetActivitiesFull();
+        _selectedItem = Activities?.FirstOrDefault();
+    }
+
+    private string SelectedRowClassFunc(TimeActivity activity, int rowNumber)
+    {
+        if (_selectedItem == activity)
+        {
+            return "selected";
+        }
+        return string.Empty;
+    }
+
+    private void RowClick(TableRowClickEventArgs<TimeActivity> args)
+    {
+        if (args.MouseEventArgs.Detail == 2)
+        {
+            DialogInstance.Close(_selectedItem);
+        }
+    }
+
+    private bool Filter(TimeActivity arg)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+        {
+            return true;
+        }
+        return arg.Name?.Contains(_searchString, StringComparison.CurrentCultureIgnoreCase) ?? false;
+    }
+
+    private void Submit()
+    {
+        if (_selectedItem != null)
+        {
+            DialogInstance.Close(_selectedItem);
+        }
+    }
+
+}

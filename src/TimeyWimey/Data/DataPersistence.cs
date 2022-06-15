@@ -225,6 +225,15 @@ public class DataPersistence
         return await db.Activities.OrderByDescending(a => a.LastUsed).ToArrayAsync();
     }
 
+    public async Task<TimeActivity[]?> GetActivitiesFull()
+    {
+        await using var db = await _contextFactory.CreateDbContextAsync();
+        return await db.Activities
+            .Include(a => a.TimeCodes)
+            .ThenInclude(tc => tc.System)
+            .OrderByDescending(a => a.Name).ToArrayAsync();
+    }
+
     public async Task Delete(TimeEntry entry)
     {
         await using var db = await _contextFactory.CreateDbContextAsync();

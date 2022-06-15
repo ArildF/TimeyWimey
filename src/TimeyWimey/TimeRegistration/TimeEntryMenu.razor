@@ -34,6 +34,8 @@
                             </div>
                         </MudMenuItem>
                     }
+                    <MudMenuItem Class="ma-0 pa-0 ml-1 pl-1" OnClick="ShowAll">
+                        <div style="font-weight: bold">[Show All...]</div></MudMenuItem>
                     <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="async () => await DeleteEntry(Entry!)"/>
                 </div>
                 <div class="d-flex flex-column">
@@ -170,6 +172,27 @@
         await Committed.InvokeAsync();
     }
 
-}
+    private async Task ShowAll()
+    {
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            DisableBackdropClick = false,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true,
+            Position = DialogPosition.Center,
+        };
+
+        var d = _dialogService.Show<AllActivitiesDialog>("Select activity", 
+            new DialogParameters(), options);
+
+        var result = await d.Result;
+        if (!result.Cancelled && result.Data is TimeActivity activity)
+        {
+            await AssignActivity(activity);
+        }
+    }
 
 }
+
+
