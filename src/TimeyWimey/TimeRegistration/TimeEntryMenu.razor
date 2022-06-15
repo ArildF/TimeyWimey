@@ -26,7 +26,7 @@
                         <MudMenuItem Class="ma-0 pa-0 ml-1 pl-1" OnClick="Edit">
                             <div style="font-weight: bold">[Edit '@Entry.Activity.Name'...]</div></MudMenuItem>
                     }
-                    @foreach (var activity in _filteredActivities!)
+                    @foreach (var activity in _filteredActivities!.Take(6))
                     {
                         <MudMenuItem OnClick="async () => await SetActivity(activity)" Class="ma-0 pa-0 ml-1 pl-1">
                             <div style="background: @activity.Color; color: @ColorHelper.CalculateForegroundTextColor(activity.Color)">
