@@ -113,13 +113,13 @@
                 .Select(e => e.Activity!)
                 .FirstOrDefault(a => a.Id == activity.Id);
             var toAssign = existingActivity ?? activity;
-            toAssign.LastUsed = DateTime.Now;
             await AssignActivity(toAssign);
         }
     }
 
     private async Task AssignActivity(TimeActivity activity)
     {
+        activity.LastUsed = DateTime.Now;
         Entry!.Activity = activity;
         Entry.Title = activity.Name;
         await Committed.InvokeAsync();
