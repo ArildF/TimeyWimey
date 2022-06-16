@@ -1,5 +1,6 @@
 ﻿@using MudBlazor;
 @using TimeyWimey.Data
+@using TimeyWimey.Infrastructure
 @using TimeyWimey.Model
 @inject DataPersistence _persistence;
 
@@ -40,7 +41,10 @@
             <RowTemplate>
                 <MudTd DataLabel="Name">@context.Name</MudTd>
                 <MudTd DataLabel="Color">
-                    <div style="background-color: @context.Color">@context.Color</div></MudTd>
+                    <div style="background-color: @context.Color; color: @ColorHelper.CalculateForegroundTextColor(context.Color)">
+                        @context.Color
+                    </div>
+                </MudTd>
                 <MudTd DataLabel="Created">@context.Created</MudTd>
                 <MudTd DataLabel="Last used">@context.LastUsed</MudTd>
                 <MudTd DataLabel="Time codes">
