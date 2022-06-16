@@ -26,14 +26,15 @@ var bottom = y + height;
 <TimeEntryMenu @ref=@Menu Committed="TimeEntryCommitted" Day="Day" Entry="Entry"/>
 <text>
     <text x="50%" y="@(textPos)%" class="entryTitle" style="fill: @(ColorHelper.CalculateForegroundTextColor(EntryColor))" width="100%">
-        @Entry.Title
+        @(string.IsNullOrWhiteSpace(Entry.Title) ? Entry.Activity?.Name : Entry.Title)
         @if (!String.IsNullOrEmpty(Entry.Notes))
         {
             <text>&#x1F4DD;</text>
         }
     </text>
 </text>
-@if (Entry.Activity != null && Entry.Title != Entry.Activity.Name)
+@if (Entry.Activity != null && !string.IsNullOrWhiteSpace(Entry.Title) && 
+     Entry.Title != Entry.Activity.Name)
 {
     <text>
         <text x="50%" y="@(textPos + 1)%" class="entryTitle" style="font-size: 1rem; fill: @(ColorHelper.CalculateForegroundTextColor(EntryColor))" width="100%">@Entry.Activity.Name</text>

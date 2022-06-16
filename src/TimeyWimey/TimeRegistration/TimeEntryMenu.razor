@@ -39,7 +39,7 @@
                     <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Secondary" OnClick="async () => await DeleteEntry(Entry!)"/>
                 </div>
                 <div class="d-flex flex-column">
-                    <MudTextField @bind-Value="Entry.Title" Label="Title" @onkeypress="OnKeyPress"/>
+                    <MudTextField @bind-Value="Entry.Title" Placeholder="@(Entry.Activity?.Name)" Label="Title" @onkeypress="OnKeyPress"/>
                     <MudTextField @bind-Value="Entry.Notes" Label="Notes" Lines="8" FullWidth="true"/>
                     <div class="d-flex flex-row">
                         <MudIconButton Icon="@Icons.Material.Filled.Save" Size="Size.Small" OnClick="async () => await Save()"></MudIconButton>
@@ -121,7 +121,6 @@
     {
         activity.LastUsed = DateTime.Now;
         Entry!.Activity = activity;
-        Entry.Title = activity.Name;
         await Committed.InvokeAsync();
     }
 
