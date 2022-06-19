@@ -7,6 +7,12 @@
 @inject DataPersistence _persistence;
 @inject EventAggregator _aggregator;
 
+@if(Entry == null)
+{
+    <p>Loading</p>
+    return;
+}
+
 <MudMenu @ref="Menu">
     <ChildContent>
         <div class="d-flex flex-column">
@@ -72,7 +78,7 @@
     private string? _searchText;
 
 
-    public async ValueTask Toggle(MouseEventArgs obj = default)
+    public async ValueTask Toggle(MouseEventArgs? obj = default)
     {
         obj ??= new();
         Menu!.PopoverStyle = $"margin-top: {obj.ClientY}px; margin-left: {obj.ClientX}px";

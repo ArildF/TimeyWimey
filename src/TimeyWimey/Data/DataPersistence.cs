@@ -100,7 +100,7 @@ public class DataPersistence
                 if (existingActivity.TimeCodes.All(c => c.Id != code.Id))
                 {
                     var c = await db.TimeCodes.FindAsync(code.Id);
-                    existingActivity.TimeCodes.Add(c);
+                    existingActivity.TimeCodes.Add(c!);
                 }
             }
 
@@ -206,7 +206,7 @@ public class DataPersistence
             .AsNoTrackingWithIdentityResolution()
             .Include(d => d.Entries)
             .ThenInclude(e => e.Activity)
-            .ThenInclude(a => a.TimeCodes)
+            .ThenInclude(a => a!.TimeCodes)
             .ThenInclude(tc => tc.System)
             .ToDictionaryAsync(d => d.Date);
 

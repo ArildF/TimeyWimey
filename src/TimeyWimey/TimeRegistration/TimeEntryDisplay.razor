@@ -115,7 +115,7 @@ var bottom = y + height;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && Entry.NeedsInitializaton)
+        if (firstRender && Entry.NeedsInitialization)
         {
             await Menu!.Toggle(CurrentMouseEventArgs ?? new MouseEventArgs());
         }

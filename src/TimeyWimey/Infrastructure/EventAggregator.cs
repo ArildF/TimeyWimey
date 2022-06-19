@@ -12,7 +12,7 @@ public class EventAggregator
         return subject;
     }
 
-    public void Publish<T>(T? message = default)
+    public void Publish<T>(T message)
     {
         var subject = GetSubject<T>();
         subject.OnNext(message);

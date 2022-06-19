@@ -96,7 +96,7 @@
             Start = timeOnly,
             End = timeOnly.AddHours(0.5),
             Notes = "",
-            NeedsInitializaton = true,
+            NeedsInitialization = true,
         };
         Day.Entries.Add(timeEntry);
         await _persistence.Save(Day);

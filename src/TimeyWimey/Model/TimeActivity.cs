@@ -15,7 +15,7 @@ public class TimeActivity
 
     public string? Color { get; set; }
 
-    public ICollection<TimeCode> TimeCodes { get; set; }
+    public ICollection<TimeCode> TimeCodes { get; set; } = new List<TimeCode>();
 
     public DateTime? LastUsed { get; set; }
 

@@ -22,7 +22,7 @@ public class TimeEntry
     public int Id { get; set; }
 
     [NotMapped]
-    public bool NeedsInitializaton { get; set; }
+    public bool NeedsInitialization { get; set; }
 
-    public string Notes { get; set; }
+    public string? Notes { get; set; }
 }

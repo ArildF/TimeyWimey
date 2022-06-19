@@ -20,7 +20,7 @@ public class WeekReportGenerator
         var codeSystems = days.SelectMany(d => d.Entries)
             .Select(e => e.Activity)
             .Where(a => a != null)
-            .SelectMany(a => a.TimeCodes)
+            .SelectMany(a => a!.TimeCodes)
             .Select(tc => tc.System).Distinct();
 
         return GeneratePerCodeSystem(codeSystems, days).ToArray();
