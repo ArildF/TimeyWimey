@@ -13,9 +13,12 @@
 }
 
 <div>
-    <div style="display: flex; justify-content: end; align-items: center; width: 100%;">
+    <div style="display: flex; justify-content: flex-end; align-items: baseline; width: 100%; gap: 3em">
+        <div> <MudDatePicker ShowWeekNumbers="true" Date="_weekOfDate" 
+                             Placeholder="For week of"
+                             DateChanged="DateChanged" FirstDayOfWeek="DayOfWeek.Monday"/></div>
         <MudButton Href="@ReportLink">Show report</MudButton>
-        <MudCheckBox @bind-Checked="FiveDayWeek" Label="Five day week" Color="Color.Primary"/>
+        <MudCheckBox @bind-Checked="FiveDayWeek" Label="Five day week" Color="Color.Primary" />
     </div>
 
     <div class="flex-row d-flex" style="width: 100%">
@@ -42,6 +45,8 @@
 
     private DateOnly _reportDay;
 
+    private DateTime? _weekOfDate;
+
     private string ReportLink => $"WeekReport/{_reportDay.ToDateTime(TimeOnly.MinValue).ToString("s")}";
     private Day[]? Days => _fiveDayWeek ? _days?.Take(5).ToArray() : _days;
 
@@ -50,8 +55,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _days = await _persistence.GetDaysForWeek(DateOnly.FromDateTime(DateTime.Now));
+        await LoadDays();
+    }
+
+    private async Task LoadDays()
+    {
+        _days = await _persistence.GetDaysForWeek(DateOnly.FromDateTime(_weekOfDate ?? DateTime.Now));
         _reportDay = _days.First().Date;
+        _weekOfDate = _reportDay.ToDateTime(TimeOnly.MinValue);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -70,4 +81,11 @@
         get => _fiveDayWeek;
         set => _fiveDayWeek = value;
     }
+
+    private async Task DateChanged(DateTime? obj)
+    {
+        _weekOfDate = obj;
+        await LoadDays();
+    }
+
 }
