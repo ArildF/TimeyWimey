@@ -12,6 +12,10 @@
                 background-color: #1E88E5 !important;
             }
 
+            .gridrow {
+                cursor: pointer;
+            }
+
 /*            .selected > td {
                 color: white !important;
             }
@@ -91,9 +95,9 @@
     {
         if (_selectedItem == activity)
         {
-            return "selected";
+            return "selected gridrow";
         }
-        return string.Empty;
+        return "gridrow";
     }
 
     private void RowClick(TableRowClickEventArgs<TimeActivity> args)
