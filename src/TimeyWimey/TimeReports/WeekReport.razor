@@ -1,6 +1,8 @@
 ﻿@page "/WeekReport/{ForWeekOf}"
 @using TimeyWimey.Data
 @using System.Globalization
+@using TimeyWimey.Infrastructure
+@using TimeyWimey.Model
 
 @inject DataPersistence _persistence;
 @inject WeekReportGenerator _generator;
@@ -71,16 +73,37 @@
     </table>
 
 }
+@if (_entriesWithNotes.EmptyIfNull().Any())
+{
+    <h5>Notes</h5>
+    <div class="d-flex flex-column" style="gap: 1em">
+        @foreach (var (day, timeEntry) in _entriesWithNotes.EmptyIfNull())
+        {
+            <article>
+                <h6>
+                    @day.Date @timeEntry.Start - @timeEntry.End
+                    @timeEntry.Activity?.Name @timeEntry.Title
+                </h6>
+                <p>@timeEntry.Notes</p>
+            </article>
+        }
+    </div>
+}
+
+
 
 @code {
     [Parameter]
     public string? ForWeekOf { get; set; }
 
     private ReportPerCodeSystem[]? _reportsPerCodeSystem;
+    private DayActivity[]? _entriesWithNotes;
 
     protected override async Task OnInitializedAsync()
     {
         var dateTime = DateTime.Parse(ForWeekOf!);
-        _reportsPerCodeSystem = await _generator.GenerateForWeekOf(DateOnly.FromDateTime(dateTime));
+        var date = DateOnly.FromDateTime(dateTime);
+        _reportsPerCodeSystem = await _generator.GenerateForWeekOf(date);
+        _entriesWithNotes = await _generator.GetNotesForWeekOf(date);
     }
 }

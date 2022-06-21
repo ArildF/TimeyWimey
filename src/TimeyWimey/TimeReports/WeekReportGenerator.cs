@@ -62,10 +62,19 @@ public class WeekReportGenerator
     }
 
 
-
+    public async Task<DayActivity[]> GetNotesForWeekOf(DateOnly date)
+    {
+        var days = await _persistence.GetDaysForWeek(date);
+        return (from day in days
+            from entry in day.Entries
+            where !string.IsNullOrWhiteSpace(entry.Notes)
+            select new DayActivity(day, entry)).ToArray();
+    }
 }
 
 public record ReportPerCodeSystem(string CodeSystem, ReportPerCode[] ReportPerCode, Day[] Days, 
     double[] DayTotals);
 
 public record ReportPerCode(string Code, double[] Hours, double Sum);
+
+public record DayActivity(Day Day, TimeEntry Entry);
