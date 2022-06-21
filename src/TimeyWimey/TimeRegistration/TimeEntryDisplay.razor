@@ -62,7 +62,7 @@ var bottom = y + height;
     [CascadingParameter]
     public MouseEventArgs? CurrentMouseEventArgs { get; set; }
 
-    public string EntryColor => Entry.Color ?? Entry?.Activity?.Color;
+    public string EntryColor => Entry?.Color ?? Entry?.Activity?.Color ?? "";
 
 
     public double YTop { get; set; }
