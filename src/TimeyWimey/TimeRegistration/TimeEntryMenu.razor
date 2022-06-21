@@ -16,8 +16,8 @@
 <MudMenu @ref="Menu">
     <ChildContent>
         <div class="d-flex flex-column">
-            <div class="d-flex flex-row">
-                <div class="d-flex flex-column">
+            <div class="d-flex flex-row" style="gap: 1em">
+                <div class="d-flex flex-column" style="align-items: stretch">
                     <div class="flex-initial ml-1 pl-1">
                     <MudTextField Placeholder="Search" T="string" Value="_searchText"
                                   Style="padding-left: 6px flex:0 1 auto"
@@ -26,7 +26,8 @@
                     </div>
 
                     <MudMenuItem Class="ma-0 pa-0 ml-1 pl-1" OnClick="New">
-                        <div style="font-weight: bold">[New...]</div></MudMenuItem>
+                        <div style="font-weight: bold">[New...]</div>
+                    </MudMenuItem>
                     @if (Entry.Activity != null)
                     {
                         <MudMenuItem Class="ma-0 pa-0 ml-1 pl-1" OnClick="Edit">
@@ -34,7 +35,7 @@
                     }
                     @foreach (var activity in _filteredActivities!.Take(6))
                     {
-                        <MudMenuItem OnClick="async () => await SetActivity(activity)" Class="ma-0 pa-0 ml-1 pl-1">
+                        <MudMenuItem Class="ma-0 pa-0 ml-1 pl-1" OnClick="async () => await SetActivity(activity)">
                             <div style="background: @activity.Color; color: @ColorHelper.CalculateForegroundTextColor(activity.Color)">
                                 @activity.Name
                             </div>
