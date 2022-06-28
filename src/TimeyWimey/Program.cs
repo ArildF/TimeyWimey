@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using TimeyWimey;
 using TimeyWimey.Data;
+using TimeyWimey.ImportExport;
 using TimeyWimey.Infrastructure;
 using TimeyWimey.Model;
 using TimeyWimey.TimeRegistration;
@@ -22,11 +23,13 @@ builder.Services.AddSingleton<MouseService>();
 builder.Services.AddSingleton<DataPersistence>();
 builder.Services.AddSingleton<SchemaMigrations>();
 builder.Services.AddSingleton<WeekReportGenerator>();
+builder.Services.AddSingleton<DataImportExport>();
 builder.Services.AddMudServices();
 
 builder.Services.AddSingleton<IMouseService>(sp => sp.GetRequiredService<MouseService>());
 
 builder.Services.AddWimeyDbContext();
+builder.Services.AddImportExportDataContext();
 
 var host = builder.Build();
 

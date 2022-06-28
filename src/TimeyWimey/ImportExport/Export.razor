@@ -1,0 +1,34 @@
+﻿@using MudBlazor;
+@using System.Text.Json
+@using TimeyWimey.Infrastructure
+@using System.Runtime.InteropServices
+@inject DataImportExport _dataImportExport;
+@inject ILogger<Export> _logger;
+@inject IJSRuntime _js;
+
+<MudButton Variant="Variant.Filled" OnClick="DoExport">ReadExportModel</MudButton>
+@code {
+
+    private async Task DoExport()
+    {
+        var model = await _dataImportExport.ReadExportModel();
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+        {
+            WriteIndented = true,
+        };
+        options.Converters.Add(new DateOnlyConverter());
+        options.Converters.Add(new TimeOnlyConverter());
+
+        await using var memStream = new MemoryStream();
+
+        await JsonSerializer.SerializeAsync(memStream, model, options);
+
+        memStream.Seek(0L, SeekOrigin.Begin);
+
+        using var reference = new DotNetStreamReference(memStream);
+        await _js.InvokeVoidAsync("downloadFileFromStream",
+            $"WimeyExport-{DateTime.Now:s}.json",
+            reference);
+    }
+
+}

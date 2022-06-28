@@ -5,7 +5,7 @@ namespace TimeyWimey.Data;
 
 public class WimeyDataContext : DbContext
 {
-    public WimeyDataContext(DbContextOptions options) : base(options)
+    public WimeyDataContext(DbContextOptions<WimeyDataContext> options) : base(options)
     {
         
     }

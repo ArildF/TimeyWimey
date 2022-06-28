@@ -14,6 +14,8 @@ public class TimeCode
     public string Code { get; set; }
     public string Description{ get; set; }
 
+    public int SystemId { get; set; }
+
     public ICollection<TimeActivity> Activities { get; set; }
 #nullable enable
 }

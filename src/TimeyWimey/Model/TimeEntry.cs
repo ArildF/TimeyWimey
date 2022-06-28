@@ -21,6 +21,8 @@ public class TimeEntry
 
     public int Id { get; set; }
 
+    public int DayId { get; set; }
+
     [NotMapped]
     public bool NeedsInitialization { get; set; }
 
