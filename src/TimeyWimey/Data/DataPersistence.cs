@@ -117,7 +117,7 @@ public class DataPersistence
         await Sync();
     }
 
-    private async Task Sync()
+    public async Task Sync()
     {
         await _module!.InvokeVoidAsync("syncDatabase", false);
     }

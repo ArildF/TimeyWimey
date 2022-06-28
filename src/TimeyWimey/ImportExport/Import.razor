@@ -1,4 +1,41 @@
-﻿
+﻿@using MudBlazor;
+@using System.Text.Json
+@using TimeyWimey.Infrastructure
+@inject IDialogService _dialogService;
+@inject ILogger<Import> _logger;
+@inject DataImportExport _dataImportExport;
+
+
+<div class="d-flex">
+    <InputFile id="fileUpload" OnChange="DoImport" hidden accept=".json"/>
+    <MudButton Variant="Variant.Filled" HtmlTag="label" For="fileUpload">Import</MudButton>
+</div>
 @code {
+
+    private async Task DoImport(InputFileChangeEventArgs args)
+    {
+        bool? result = await _dialogService.ShowMessageBox("Warning",
+            "Import will overwrite the existing database.",
+            "Proceed", "Cancel");
+
+        if (result != true)
+        {
+            return;
+        }
+
+        var file = args.File;
+        await using var stream = file.OpenReadStream();
+
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+        {
+            WriteIndented = true,
+        };
+        options.Converters.Add(new DateOnlyConverter());
+        options.Converters.Add(new TimeOnlyConverter());
+        var exportModel = await JsonSerializer.DeserializeAsync<ExportModel>(stream, options);
+
+        await _dataImportExport.Import(exportModel);
+
+    }
 
 }

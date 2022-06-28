@@ -73,7 +73,9 @@
         {
             object[] values = new object[reader.VisibleFieldCount];
             reader.GetValues(values);
-            var valueStrings = values.Select(v => $"{v.ToString()?.Trim()}").Select(v => $"{v,-25}");
+            var valueStrings = values.Select(
+                v => $"{(v == DBNull.Value ? "<NULL>" : v.ToString()?.Trim())}")
+                .Select(v => $"{v,-25}");
             builder.AppendLine(String.Join("", valueStrings));
         }
     }

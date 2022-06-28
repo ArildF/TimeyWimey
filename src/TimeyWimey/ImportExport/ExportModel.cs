@@ -10,6 +10,6 @@ namespace TimeyWimey.ImportExport
         public TimeEntryExport[] Entries { get; init; }
         public TimeCodeExport[] TimeCodes { get; init; }
         public TimeCodeSystemExport[] CodeSystems { get; init; }
-        public object TimeActivityTimeCode { get; set; }
+        public TimeActivityTimeCodeExport[] TimeActivityTimeCode { get; set; }
     }
 }

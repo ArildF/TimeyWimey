@@ -193,7 +193,7 @@ var bottom = y + height;
 
     private string CalculateColorWithAlpha(string? entryColor)
     {
-        if (entryColor == null)
+        if (string.IsNullOrEmpty(entryColor))
         {
             return "#FF00FF";
         }
