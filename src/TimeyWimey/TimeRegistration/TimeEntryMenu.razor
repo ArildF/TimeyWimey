@@ -134,9 +134,11 @@
 
     private async Task New()
     {
+        var random = new Random();
+        int RandomByte() => random.Next(255);
         var activity = new TimeActivity
         {
-            Color = new MudColor(0, 255, 0, 255).ToString(MudColorOutputFormats.HexA),
+            Color = new MudColor(RandomByte(), RandomByte(), RandomByte(), 255).ToString(MudColorOutputFormats.HexA),
             TimeCodes = new List<TimeCode>(),
         };
         await EditActivity(activity, "New activity");
