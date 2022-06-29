@@ -33,8 +33,15 @@
         options.Converters.Add(new DateOnlyConverter());
         options.Converters.Add(new TimeOnlyConverter());
         var exportModel = await JsonSerializer.DeserializeAsync<ExportModel>(stream, options);
+        if (exportModel == null)
+        {
+            await _dialogService.ShowMessageBox("Failure", "Unable to read import file");
+            return;
+        }
 
         await _dataImportExport.Import(exportModel);
+
+        await _dialogService.ShowMessageBox("Success", "Import completed successfully");
 
     }
 

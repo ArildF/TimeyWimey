@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
-
-namespace TimeyWimey.ImportExport;
+﻿namespace TimeyWimey.ImportExport;
 
 public record DayExport(int Id, DateOnly Date);
 public record TimeActivityExport(int Id, string? Name, DateTime Created, string? Color, DateTime? LastUsed);
