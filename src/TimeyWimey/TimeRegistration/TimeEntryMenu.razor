@@ -15,6 +15,7 @@
 
 <MudMenu @ref="Menu">
     <ChildContent>
+        <MudOverlay OnClick="@(async () => await Toggle())" Visible="true" ZIndex="-1"/>
         <div class="d-flex flex-column">
             <div class="d-flex flex-row" style="gap: 1em">
                 <div class="d-flex flex-column" style="align-items: stretch">
@@ -57,6 +58,7 @@
             <div class="d-flex flex-row">
             </div>
         </div>
+        
     </ChildContent>
 </MudMenu>
 @code {
