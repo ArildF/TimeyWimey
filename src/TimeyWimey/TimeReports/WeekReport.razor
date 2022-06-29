@@ -2,10 +2,13 @@
 @using TimeyWimey.Data
 @using System.Globalization
 @using TimeyWimey.Infrastructure
+@using MudBlazor;
 @using TimeyWimey.Model
+@using TimeyWimey.TimeRegistration
 
 @inject DataPersistence _persistence;
 @inject WeekReportGenerator _generator;
+@inject IDialogService _dialogService;
 
 
 @if (_reportsPerCodeSystem == null)
@@ -21,6 +24,7 @@
     }
     .header {
         text-align: center;
+        font-weight: bold;
 
     }
     ul {
@@ -96,39 +100,48 @@
 @if (_entriesWithMissingCodeSystems.EmptyIfNull().Any())
 {
     <h5>Entries with missing code systems</h5>
-    <div class="d-flex flex-column" style="gap: 1em">
-        @foreach (var cs in _entriesWithMissingCodeSystems!)
-        {
-            <article>
-                <h6>@cs.Key</h6>
-                <ul>
-                @foreach (var missing in cs)
-                {
-                    <li>
-                        @missing.Day.Date @(missing.Entry.Start) - @(missing.Entry.End)
-                        @missing.Entry.Activity?.Name @missing.Entry.Title
+    @foreach (var cs in _entriesWithMissingCodeSystems!)
+    {
+        <h6>Missing @cs.Key</h6>
+        <table style="min-width: 800px" class="mb-8">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Activity</th>
+                <th>Name</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var missing in cs)
+            {
+                <tr>
+                    <td class="header">@missing.Day.Date.ToString("M")</td>
+                    <td>@(missing.Entry.Start)</td>
+                    <td>@(missing.Entry.End)</td>
+                    <td>@missing.Entry.Activity?.Name</td>
+                    <td>@missing.Entry.Title</td>
+
+                    <td >
                         @if (missing.Entry.Activity == null)
                         {
                             <b>No activity</b>
                         }
-                    </li>
-                }
-                </ul>
-            </article>
-        }
-@*        @foreach (var (day, timeEntry) in _entriesWithNotes.EmptyIfNull())
-        {
-            <article>
-                <h6>
-                    @day.Date @timeEntry.Start - @timeEntry.End
-                    @timeEntry.Activity?.Name @timeEntry.Title
-                </h6>
-                <p>@timeEntry.Notes</p>
-            </article>
-        }
-*@    </div>
+                        else
+                        {
+                            <MudButton Variant="Variant.Filled"  OnClick="@(async () => await EditActivity(missing.Entry.Activity))">
+                                Edit activity
+                            </MudButton>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
 }
-
 
 
 @code {
@@ -141,6 +154,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await GenerateReport();
+    }
+
+    private async Task GenerateReport()
+    {
         var dateTime = DateTime.Parse(ForWeekOf!);
         var date = DateOnly.FromDateTime(dateTime);
         _reportsPerCodeSystem = await _generator.GenerateForWeekOf(date);
@@ -149,4 +167,28 @@
         _entriesWithMissingCodeSystems = (await _generator.GetEntriesWithMissingCodeSystems(date))
             .GroupBy(g => g.CodeSystem).ToArray();
     }
+
+    private async Task EditActivity(TimeActivity activity)
+    {
+        var parameters = new DialogParameters { { nameof(TimeActivityEditor.Activity), activity } };
+
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            DisableBackdropClick = false,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true,
+            Position = DialogPosition.Center,
+        };
+
+        var d = _dialogService.Show<TimeActivityEditor>("Edit activity", parameters, options);
+        var result = await d.Result;
+
+        if (!result.Cancelled && (bool)result.Data)
+        {
+            await _persistence.Save(activity);
+            await GenerateReport();
+        }
+    }
+
 }
