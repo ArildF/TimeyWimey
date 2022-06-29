@@ -70,6 +70,31 @@ public class WeekReportGenerator
             where !string.IsNullOrWhiteSpace(entry.Notes)
             select new DayActivity(day, entry)).ToArray();
     }
+
+    public async Task<MissingCodeSystem[]> GetEntriesWithMissingCodeSystems(DateOnly date)
+    {
+        var days = await _persistence.GetDaysForWeek(date);
+        var codeSystems = days.SelectMany(e => e.Entries)
+            .Select(e => e.Activity)
+            .Where(a => a != null)
+            .SelectMany(a => a.TimeCodes)
+            .Select(tc => tc.System)
+            .DistinctBy(s => s.Id).ToArray();
+            
+        var missing = (from cs in codeSystems
+            from d in days
+            from e in d.Entries
+            where e.Activity != null
+            where e.Activity!.TimeCodes.All(tc => tc.SystemId != cs.Id)
+            select new MissingCodeSystem(cs.Name, d, e)).Concat(
+                from cs in codeSystems
+                from d in days
+                from e in d.Entries
+                where e.Activity == null
+                select new MissingCodeSystem(cs.Name, d, e));
+
+        return missing.ToArray();
+    }
 }
 
 public record ReportPerCodeSystem(string CodeSystem, ReportPerCode[] ReportPerCode, Day[] Days, 
@@ -78,3 +103,5 @@ public record ReportPerCodeSystem(string CodeSystem, ReportPerCode[] ReportPerCo
 public record ReportPerCode(string Code, double[] Hours, double Sum);
 
 public record DayActivity(Day Day, TimeEntry Entry);
+
+public record MissingCodeSystem(string CodeSystem, Day Day, TimeEntry Entry);

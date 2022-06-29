@@ -23,6 +23,9 @@
         text-align: center;
 
     }
+    ul {
+        list-style: circle;
+    }
 </style>
 @foreach (var report in _reportsPerCodeSystem)
 {
@@ -90,6 +93,42 @@
     </div>
 }
 
+@if (_entriesWithMissingCodeSystems.EmptyIfNull().Any())
+{
+    <h5>Entries with missing code systems</h5>
+    <div class="d-flex flex-column" style="gap: 1em">
+        @foreach (var cs in _entriesWithMissingCodeSystems!)
+        {
+            <article>
+                <h6>@cs.Key</h6>
+                <ul>
+                @foreach (var missing in cs)
+                {
+                    <li>
+                        @missing.Day.Date @(missing.Entry.Start) - @(missing.Entry.End)
+                        @missing.Entry.Activity?.Name @missing.Entry.Title
+                        @if (missing.Entry.Activity == null)
+                        {
+                            <b>No activity</b>
+                        }
+                    </li>
+                }
+                </ul>
+            </article>
+        }
+@*        @foreach (var (day, timeEntry) in _entriesWithNotes.EmptyIfNull())
+        {
+            <article>
+                <h6>
+                    @day.Date @timeEntry.Start - @timeEntry.End
+                    @timeEntry.Activity?.Name @timeEntry.Title
+                </h6>
+                <p>@timeEntry.Notes</p>
+            </article>
+        }
+*@    </div>
+}
+
 
 
 @code {
@@ -98,6 +137,7 @@
 
     private ReportPerCodeSystem[]? _reportsPerCodeSystem;
     private DayActivity[]? _entriesWithNotes;
+    private IGrouping<string, MissingCodeSystem>[]? _entriesWithMissingCodeSystems;
 
     protected override async Task OnInitializedAsync()
     {
@@ -105,5 +145,8 @@
         var date = DateOnly.FromDateTime(dateTime);
         _reportsPerCodeSystem = await _generator.GenerateForWeekOf(date);
         _entriesWithNotes = await _generator.GetNotesForWeekOf(date);
+
+        _entriesWithMissingCodeSystems = (await _generator.GetEntriesWithMissingCodeSystems(date))
+            .GroupBy(g => g.CodeSystem).ToArray();
     }
 }
