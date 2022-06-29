@@ -6,6 +6,7 @@
 @inject IDialogService _dialogService;
 @inject DataPersistence _persistence;
 @inject EventAggregator _aggregator;
+@inject IJSRuntime _js;
 
 @if(Entry == null)
 {
@@ -84,7 +85,19 @@
     public async ValueTask Toggle(MouseEventArgs? obj = default)
     {
         obj ??= new();
-        Menu!.PopoverStyle = $"margin-top: {obj.ClientY}px; margin-left: {obj.ClientX}px";
+
+        var bounds = await _js.InvokeAsync<BoundingClientRect>("getWindowRect");
+
+        const int estimatedOffset = 400;
+        var horizontalStyle = obj.ClientX >= bounds.Width / 2 && obj.ClientX > bounds.Width - estimatedOffset
+            ? $"margin-left: {bounds.Width - estimatedOffset}px;"
+            : $"margin-left: {obj.ClientX}px;";
+        var verticalStyle = obj.ClientY >= bounds.Height / 2 && obj.ClientY > bounds.Height - estimatedOffset
+            ? $"margin-top: {bounds.Height - estimatedOffset}px;"
+            : $"margin-top: {obj.ClientY}px;";
+
+        Menu!.PopoverStyle = horizontalStyle + verticalStyle;
+
         _activities = await _persistence.GetActivities();
         _filteredActivities = _activities;
         Menu.ToggleMenu(obj);
