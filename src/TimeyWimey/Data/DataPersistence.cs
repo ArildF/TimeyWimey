@@ -87,12 +87,14 @@ public class DataPersistence
             var existingActivity = await db.Activities.Include(a => a.TimeCodes)
                 .SingleAsync(a => a.Id == activity.Id);
             db.Entry(existingActivity).CurrentValues.SetValues(activity);
-            foreach (var code in existingActivity.TimeCodes)
+
+            var toRemove = (from code in existingActivity.TimeCodes
+                where activity.TimeCodes.All(c => c.Id != code.Id)
+                select code).ToArray();
+
+            foreach (var code in toRemove)
             {
-                if (activity.TimeCodes.All(c => c.Id != code.Id))
-                {
-                    existingActivity.TimeCodes.Remove(code);
-                }
+                existingActivity.TimeCodes.Remove(code);
             }
 
             foreach (var code in activity.TimeCodes)
