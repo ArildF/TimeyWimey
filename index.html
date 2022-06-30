@@ -55,6 +55,13 @@
             anchorElement.click();
             anchorElement.remove();
         }
+
+        function getWindowRect() {
+            const width = window.visualViewport.width;
+            const height = window.visualViewport.height;
+
+            return new DOMRect(0, 0, width, height);
+         }
     </script>
 <!-- Start Single Page Apps for GitHub Pages -->
 <script type="text/javascript">
