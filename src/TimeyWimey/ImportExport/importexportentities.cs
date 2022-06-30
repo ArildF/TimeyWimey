@@ -10,4 +10,4 @@ public record TimeCodeExport(int Id, string Code, string Description, int System
 public record TimeCodeSystemExport(int Id, string Name, string Description);
 
 public record TimeEntryExport(int Id, TimeOnly Start, TimeOnly End, string? Title,
-    string? Color, int DayId, string? Notes, int ActivityId);
+    string? Color, int DayId, string? Notes, int? ActivityId);
