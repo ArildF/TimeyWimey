@@ -31,6 +31,10 @@
         list-style: circle;
     }
 </style>
+@if (!_reportsPerCodeSystem.Any())
+{
+    <h5>No data for the week of @_date</h5>
+}
 @foreach (var report in _reportsPerCodeSystem)
 {
     <h3>@report.CodeSystem</h3>
@@ -151,6 +155,7 @@
     private ReportPerCodeSystem[]? _reportsPerCodeSystem;
     private DayActivity[]? _entriesWithNotes;
     private IGrouping<string, MissingCodeSystem>[]? _entriesWithMissingCodeSystems;
+    private DateOnly _date;
 
     protected override async Task OnInitializedAsync()
     {
@@ -160,11 +165,11 @@
     private async Task GenerateReport()
     {
         var dateTime = DateTime.Parse(ForWeekOf!);
-        var date = DateOnly.FromDateTime(dateTime);
-        _reportsPerCodeSystem = await _generator.GenerateForWeekOf(date);
-        _entriesWithNotes = await _generator.GetNotesForWeekOf(date);
+        _date = DateOnly.FromDateTime(dateTime);
+        _reportsPerCodeSystem = await _generator.GenerateForWeekOf(_date);
+        _entriesWithNotes = await _generator.GetNotesForWeekOf(_date);
 
-        _entriesWithMissingCodeSystems = (await _generator.GetEntriesWithMissingCodeSystems(date))
+        _entriesWithMissingCodeSystems = (await _generator.GetEntriesWithMissingCodeSystems(_date))
             .GroupBy(g => g.CodeSystem).ToArray();
     }
 
