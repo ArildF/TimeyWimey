@@ -5,7 +5,7 @@ public record TimeActivityExport(int Id, string? Name, DateTime Created, string?
 
 public record TimeActivityTimeCodeExport(int ActivitiesId, int TimeCodesId);
 
-public record TimeCodeExport(int Id, string Code, string Description, int SystemId);
+public record TimeCodeExport(int Id, string Code, string? Description, int SystemId);
 
 public record TimeCodeSystemExport(int Id, string Name, string Description);
 
