@@ -1,16 +1,19 @@
 ﻿using System.Globalization;
 using TimeyWimey.Data;
 using TimeyWimey.Model;
+using Calendar = TimeyWimey.Model.Calendar;
 
 namespace TimeyWimey.TimeReports;
 
 public class WeekReportGenerator
 {
     private readonly DataPersistence _persistence;
+    private readonly Calendar _calendar;
 
-    public WeekReportGenerator(DataPersistence persistence)
+    public WeekReportGenerator(DataPersistence persistence, Calendar calendar)
     {
         _persistence = persistence;
+        _calendar = calendar;
     }
 
     public async Task<ReportPerCodeSystem[]> GenerateForWeekOf(DateOnly date)
@@ -80,20 +83,47 @@ public class WeekReportGenerator
             .SelectMany(a => a.TimeCodes)
             .Select(tc => tc.System)
             .DistinctBy(s => s.Id).ToArray();
-            
+
         var missing = (from cs in codeSystems
             from d in days
             from e in d.Entries
             where e.Activity != null
             where e.Activity!.TimeCodes.All(tc => tc.SystemId != cs.Id)
             select new MissingCodeSystem(cs.Name, d, e)).Concat(
-                from cs in codeSystems
-                from d in days
-                from e in d.Entries
-                where e.Activity == null
-                select new MissingCodeSystem(cs.Name, d, e));
+            from cs in codeSystems
+            from d in days
+            from e in d.Entries
+            where e.Activity == null
+            select new MissingCodeSystem(cs.Name, d, e));
 
         return missing.ToArray();
+    }
+
+    public async Task<ReportPerActivity[]> GenerateReportPerActivity(DateOnly date)
+    {
+        var days = await _persistence.GetDaysForWeek(date);
+        var activities =
+            (from day in days
+                from entry in day.Entries
+                where entry.Activity != null
+                select entry.Activity).DistinctBy(a => a.Id);
+
+        TimeSpan TimeActivityPerDay(Day day, TimeActivity activity) =>
+            TimeSpan.FromMinutes(
+                (from entry in day.Entries
+                    where entry.Activity == activity
+                    select (entry.End - entry.Start).TotalMinutes).Sum());
+
+        var results =
+            (from activity in activities
+            let daySums = (
+                from day in days
+                select (TimeActivityPerDay(day, activity)))
+            select new ReportPerActivity(activity, daySums.ToArray(),
+                TimeSpan.FromMinutes(daySums.Select(ds => ds.TotalMinutes).Sum()))).ToArray();
+
+
+        return results;
     }
 }
 
@@ -105,3 +135,5 @@ public record ReportPerCode(string Code, double[] Hours, double Sum);
 public record DayActivity(Day Day, TimeEntry Entry);
 
 public record MissingCodeSystem(string CodeSystem, Day Day, TimeEntry Entry);
+
+public record ReportPerActivity(TimeActivity Activity, TimeSpan[] HoursPerDay, TimeSpan Sum);

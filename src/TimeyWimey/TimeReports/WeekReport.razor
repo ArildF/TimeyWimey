@@ -31,7 +31,7 @@
         list-style: circle;
     }
 </style>
-@if (!_reportsPerCodeSystem.Any())
+@if (!_reportsPerCodeSystem.EmptyIfNull().Any())
 {
     <h5>No data for the week of @_date</h5>
 }
@@ -84,6 +84,51 @@
     </table>
 
 }
+
+<h3>Hours per activity</h3>
+<table style="min-width: 800px" class="mb-8">
+    <thead>
+    <tr>
+        <th>Activity</th>
+        <th>Code</th>
+        @{ var reportWithDays = _reportsPerCodeSystem.First(); }
+        @foreach (var day in reportWithDays.Days)
+        {
+            <th class="header">
+                <div>@day.DayOfWeek</div> 
+                <div class="date">@day.Date.ToString("M")</div>
+            </th>
+        }
+        <th class="header">
+            Sum
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @{ bool alternate2 = false; }
+    @foreach (var perActivity in _reportsPerActivity)
+    {
+        <tr style="background: @(alternate2 ? "white" : "LightGray")">
+            <td style="min-width: 80px; font-weight: bold">@perActivity.Activity.Name</td>
+            <td style="font-weight: bold">
+                @string.Join(" - ", perActivity.Activity.TimeCodes.Select(c => c.Code))
+            </td>
+            @foreach (var hoursPerDay in perActivity.HoursPerDay)
+            {
+                <td>
+                    @if (hoursPerDay.TotalMinutes > 0)
+                    {
+                        <div>@hoursPerDay.TotalHours.ToString(CultureInfo.CurrentCulture)</div>
+                    }
+                </td>
+            }
+            <td style="font-weight: bold">@perActivity.Sum.TotalHours</td>
+            @{ alternate2 = !alternate2;}
+        </tr>
+    }
+    </tbody>
+</table>
+
 @if (_entriesWithNotes.EmptyIfNull().Any())
 {
     <h5>Notes</h5>
@@ -154,20 +199,22 @@
 
     private ReportPerCodeSystem[]? _reportsPerCodeSystem;
     private DayActivity[]? _entriesWithNotes;
+    private ReportPerActivity[] _reportsPerActivity;
     private IGrouping<string, MissingCodeSystem>[]? _entriesWithMissingCodeSystems;
     private DateOnly _date;
 
     protected override async Task OnInitializedAsync()
     {
-        await GenerateReport();
+        await GenerateReports();
     }
 
-    private async Task GenerateReport()
+    private async Task GenerateReports()
     {
         var dateTime = DateTime.Parse(ForWeekOf!);
         _date = DateOnly.FromDateTime(dateTime);
         _reportsPerCodeSystem = await _generator.GenerateForWeekOf(_date);
         _entriesWithNotes = await _generator.GetNotesForWeekOf(_date);
+        _reportsPerActivity = await _generator.GenerateReportPerActivity(_date);
 
         _entriesWithMissingCodeSystems = (await _generator.GetEntriesWithMissingCodeSystems(_date))
             .GroupBy(g => g.CodeSystem).ToArray();
@@ -192,7 +239,7 @@
         if (!result.Cancelled && (bool)result.Data)
         {
             await _persistence.Save(activity);
-            await GenerateReport();
+            await GenerateReports();
         }
     }
 
