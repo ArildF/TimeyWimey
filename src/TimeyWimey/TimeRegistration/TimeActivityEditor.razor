@@ -16,7 +16,7 @@
             <MudTextField T="string" @ref="_nameField" Label="Name" @bind-Value="Activity.Name"></MudTextField>
             <MudColorPicker DisablePreview="false" Label="Color" @bind-Text="Activity.Color"
             ColorPickerMode="ColorPickerMode.HSL"
-                            Style='@($"background: {Activity.Color}")'></MudColorPicker>
+                            Style='@($"background: {Activity.Color}; color: {ColorHelper.CalculateForegroundTextColor(Activity.Color)}")'></MudColorPicker>
             <MudGrid Class="m-0">
                 <MudItem xs="5" Class="pa-1 pt-3"><div style="font-weight: bold; font-variant: all-small-caps">Code system</div></MudItem>
                 <MudItem xs="7" Class="pa-1 pt-3"><div style="font-weight: bold; font-variant: all-small-caps">Code</div></MudItem>
