@@ -22,6 +22,7 @@
                 <div class="d-flex flex-column" style="align-items: stretch">
                     <div class="flex-initial ml-1 pl-1">
                     <MudTextField Placeholder="Search" T="string" Value="_searchText"
+                                  AutoFocus="true"
                                   Style="padding-left: 6px flex:0 1 auto"
                                   AdornmentIcon="@Icons.Filled.Search" DebounceInterval="500"
                                   ValueChanged="(string term) => Search(term)"/>
