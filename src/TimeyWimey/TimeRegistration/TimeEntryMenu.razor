@@ -154,6 +154,7 @@
         int RandomByte() => random.Next(255);
         var activity = new TimeActivity
         {
+            Name = _searchText ?? "",
             Color = new MudColor(RandomByte(), RandomByte(), RandomByte(), 255).ToString(MudColorOutputFormats.HexA),
             TimeCodes = new List<TimeCode>(),
         };
