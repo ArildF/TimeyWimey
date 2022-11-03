@@ -105,7 +105,7 @@
       "url": "_framework\/icudt.dat"
     },
     {
-      "hash": "sha256-XkivtRTG03aeoXlqIyc3URBFM\/7euZSDjfjvGDKZq3g=",
+      "hash": "sha256-mj8QaHrW2Qh8F3Xi9PsV6ybCWfx76XRQy7f0w8ZIYxM=",
       "url": "_framework\/blazor.boot.json"
     },
     {
@@ -417,7 +417,7 @@
       "url": "_framework\/System.Transactions.Local.dll"
     },
     {
-      "hash": "sha256-BJSkiO17kHYC4DCOggxgydl7e2UQ+aaj5Zf+lpE0YPQ=",
+      "hash": "sha256-GdhEFpgXnxRYXhGMdv66CH+GrpPL0ATDYlO8qHc6MFI=",
       "url": "_framework\/TimeyWimey.dll"
     },
     {
@@ -445,5 +445,5 @@
       "url": "_content\/MudBlazor\/MudBlazor.min.js"
     }
   ],
-  "version": "GmQ7TgeK"
+  "version": "3SbMxdNI"
 };
